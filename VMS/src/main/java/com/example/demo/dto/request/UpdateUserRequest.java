@@ -1,0 +1,31 @@
+package com.example.demo.dto.request;
+
+import com.example.demo.enums.UserType;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class UpdateUserRequest {
+
+    @NotBlank
+    @Email
+    private String email;
+
+    @NotNull
+    private Integer vendorId;
+
+    @NotBlank
+    private String personnelName;
+
+    @NotBlank
+    private String personnelSurname;
+
+    @NotNull
+    private UserType userType;
+}
