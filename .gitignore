@@ -1,0 +1,25 @@
+# ===== Backend (Java / Maven / Spring Boot) =====
+VMS/target/
+VMS/.mvn/wrapper/maven-wrapper.jar
+VMS/*.class
+VMS/*.jar
+VMS/*.war
+VMS/.idea/
+VMS/*.iml
+
+# ===== Frontend (Node.js / Vue / Vite) =====
+VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/node_modules/
+VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/dist/
+VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/.vite/
+
+# ===== General =====
+*.env.local
+*.env.*.local
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+*.swo
+
+# ===== Docker =====
+*.override.yml
