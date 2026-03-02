@@ -83,20 +83,19 @@
   
   <script setup lang="ts">
   import { reactive, ref } from "vue";
-  
+  import { useRouter } from "vue-router";
+  import { login } from "../services/authService.js";
+
   const loading = ref(false);
   const error = ref<string | null>(null);
-  
+  const router = useRouter();
+
   const form = reactive({
     username: "",
     password: "",
     remember: true,
+    rememberMe: true,
   });
-  
-  import { login } from "../services/authService.js";
-import { useRouter } from "vue-router";
-
-const router = useRouter();
 
 async function onSubmit() {
   error.value = null;
@@ -108,8 +107,14 @@ async function onSubmit() {
 
   loading.value = true;
   try {
-    await login({ username: form.username, password: form.password });
-    await router.push("/"); // or /dashboard
+    const user = await login({ username: form.username, password: form.password, rememberMe: form.rememberMe });
+    if (user.userType === "MANAGER") {
+      await router.push("/pm/dashboard");
+    } else if (user.userType === "VENDOR_ADMIN") {
+      await router.push("/vendor/dashboard");
+    } else {
+      await router.push("/personnel");
+    }
   } catch (e: any) {
     error.value =
       e?.response?.data?.message ??
@@ -119,11 +124,11 @@ async function onSubmit() {
     loading.value = false;
   }
 }
-  
+
   function onForgotPassword() {
     alert("Forgot password (stub).");
   }
-  
+
   function onRegister() {
     alert("Register (stub).");
   }
@@ -142,7 +147,7 @@ async function onSubmit() {
   .bg {
     position: absolute;
     inset: 0;
-    background-image: url("C:\Users\msi\Desktop\MyWorkspace\VMS-Frontend.PleaseWork\Ye\VMS-Frontend.Vue\VMS-Frontend\src\assets\VMS-Theme.png");
+    background-image: url("../assets/VMS-Theme.png");
     background-size: cover;
     background-position: center;
     transform: scale(1.03);

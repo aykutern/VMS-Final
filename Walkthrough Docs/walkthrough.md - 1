@@ -1,0 +1,105 @@
+# VMS — Implementation Walkthrough
+
+## What Was Built
+
+### Backend Changes
+
+| File | Change |
+|---|---|
+| [enums/UserType.java](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS/src/main/java/com/example/demo/enums/UserType.java) | Added `VENDOR_ADMIN` enum value |
+| [config/DataLoader.java](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS/src/main/java/com/example/demo/config/DataLoader.java) | **NEW** — Seeds all data on first startup |
+
+**Seed data (auto-inserted when DB is empty):**
+
+| Type | Count | Details |
+|---|---|---|
+| Vendors | 2 | TechCorp Solutions, SoftSolutions Inc. |
+| ProductManagers | 2 | Alice (MANAGER), Bob (PRODUCT_OWNER) |
+| Users | 4 | `pm_user`, `vendor_admin`, `tech_dev`, `soft_dev` |
+| Projects | 2 | E-Commerce Platform Redesign, HR Management System |
+| Announcements | 3 | Distributed across both projects |
+| Sprints | 4 | 2 per project (ACTIVE + PLANNED) |
+| Assignments | 6 | 3 per project (TODO + IN_PROGRESS + COMPLETED) |
+
+---
+
+### Frontend Changes
+
+#### Infrastructure
+- **[router/index.js](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/router/index.js)** — Full role-based routing: `/pm/*`, `/vendor/*`, `/personnel/*` protected with `beforeEach` guards. Login redirects by `userType`.
+- **[Sidebar.vue](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/components/Sidebar.vue)** — Role-aware nav menu (MANAGER / VENDOR_ADMIN / PERSONNEL). Dark glassmorphism design with logout.
+- **[TopBar.vue](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/components/TopBar.vue)** — Sticky header with page title + user avatar pill.
+- **[AppLayout.vue](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/components/AppLayout.vue)** — Shell wrapping Sidebar + TopBar + `<router-view>`.
+- **[authService.js](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/services/authService.js)** — Added [getCurrentUser()](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/services/authService.js#20-24) helper.
+- **[http.js](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/lib/http.js)** — Fallback baseURL + X-User header injection.
+
+#### PM (Product Manager) — 6 views
+| View | Feature |
+|---|---|
+| [PMhome.vue](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/views/PMhome.vue) | Dashboard: 4 stat cards, recent projects, announcements, active sprints table |
+| [pm/Projects.vue](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/views/pm/Projects.vue) | Project grid, create modal (vendor selector) |
+| [pm/ProjectDetail.vue](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/views/pm/ProjectDetail.vue) | 3 tabs: Announcements / Sprints / Tasks — create forms in each |
+| [pm/Sprints.vue](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/views/pm/Sprints.vue) | Sprint grid, project+status filter, create modal |
+| [pm/Assignments.vue](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/views/pm/Assignments.vue) | Kanban board (TODO/IN_PROGRESS/COMPLETED), create task modal with sprint selector |
+| [pm/Vendors.vue](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/views/pm/Vendors.vue) | Vendor cards with assigned projects, add vendor modal |
+
+#### Vendor Admin — 4 views
+| View | Feature |
+|---|---|
+| [VendorAdminHome.vue](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/views/VendorAdminHome.vue) | Dashboard: stats, project list, sprint overview, task status board |
+| [vendor/VendorProjects.vue](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/views/vendor/VendorProjects.vue) | Vendor-scoped project list + detail panel |
+| [vendor/VendorSprints.vue](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/views/vendor/VendorSprints.vue) | Sprint grid filtered by vendor's projects |
+| [vendor/VendorAssignments.vue](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/views/vendor/VendorAssignments.vue) | Kanban + **Start / Complete** action buttons → `PATCH /api/assignments/:id/status` |
+
+#### Personnel — 1 view
+| View | Feature |
+|---|---|
+| [PersonnelHome.vue](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/views/PersonnelHome.vue) | 3-column Kanban, welcome banner, task summary pills, **Start Task / Mark Complete** buttons |
+
+---
+
+## Test Credentials
+
+| Username | Password | Role | Dashboard |
+|---|---|---|---|
+| `pm_user` | `Password1` | Product Manager | `/pm/dashboard` |
+| `vendor_admin` | `Password1` | Vendor Admin | `/vendor/dashboard` |
+| `tech_dev` | `Password1` | Developer | `/personnel` |
+| `soft_dev` | `Password1` | Developer | `/personnel` |
+
+---
+
+## How to Run
+
+```bash
+# 1 — Start PostgreSQL (Docker Compose or local)
+docker compose up -d db
+
+# 2 — Start backend (auto-seeds DB on first run)
+cd VMS
+./mvnw spring-boot:run
+
+# 3 — Start frontend
+cd VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend
+npm run dev
+```
+
+Then open `http://localhost:5173` — you'll be redirected to `/login`.
+
+> [!NOTE]
+> The backend runs on port **8081**. Make sure `VITE_API_BASE_URL=http://localhost:8081` is set in the frontend `.env` file (or the fallback in [http.js](file:///c:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/lib/http.js) is used automatically).
+
+---
+
+## Architecture Overview
+
+```
+Login → POST /api/auth/login
+      → localStorage.user = { id, username, userType, vendorId, … }
+      → Router redirects by userType
+         ├── MANAGER      → /pm/dashboard    (AppLayout + PM views)
+         ├── VENDOR_ADMIN → /vendor/dashboard (AppLayout + Vendor views)
+         └── PERSONNEL    → /personnel        (AppLayout + PersonnelHome)
+```
+
+All protected routes are wrapped by `AppLayout` which renders `Sidebar` + `TopBar` + the child route view.

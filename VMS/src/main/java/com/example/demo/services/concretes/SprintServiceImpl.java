@@ -5,6 +5,7 @@ import com.example.demo.dto.request.UpdateSprintRequest;
 import com.example.demo.dto.response.SprintResponse;
 import com.example.demo.entities.concretes.Project;
 import com.example.demo.entities.concretes.Sprint;
+import com.example.demo.enums.SprintStatus;
 import com.example.demo.repositories.ProjectRepository;
 import com.example.demo.repositories.SprintRepository;
 import com.example.demo.services.abstracts.SprintService;
@@ -28,6 +29,10 @@ public class SprintServiceImpl implements SprintService {
     public SprintResponse create(CreateSprintRequest request) {
         Project project = projectRepository.findById(request.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project not found: " + request.getProjectId()));
+
+        if (request.getStatus() == SprintStatus.ACTIVE) {
+            enforceOneActiveSprint(request.getProjectId(), null);
+        }
 
         Sprint sprint = new Sprint();
         sprint.setProject(project);
@@ -80,6 +85,10 @@ public class SprintServiceImpl implements SprintService {
         Project project = projectRepository.findById(request.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project not found: " + request.getProjectId()));
 
+        if (request.getStatus() == SprintStatus.ACTIVE) {
+            enforceOneActiveSprint(request.getProjectId(), id);
+        }
+
         sprint.setProject(project);
         sprint.setSprintName(request.getSprintName());
         sprint.setStartDate(request.getStartDate());
@@ -99,6 +108,20 @@ public class SprintServiceImpl implements SprintService {
             sprint.setIsActive(DELETED);
             sprintRepository.save(sprint);
         }
+    }
+
+    /**
+     * Demotes any existing ACTIVE sprint in the project to PLANNED (excludes
+     * currentSprintId).
+     */
+    private void enforceOneActiveSprint(Integer projectId, Integer excludeSprintId) {
+        sprintRepository.findByProject_IdAndStatusAndIsActive(projectId, SprintStatus.ACTIVE, ACTIVE)
+                .ifPresent(existing -> {
+                    if (!existing.getId().equals(excludeSprintId)) {
+                        existing.setStatus(SprintStatus.PLANNED);
+                        sprintRepository.save(existing);
+                    }
+                });
     }
 
     private SprintResponse toResponse(Sprint sprint) {
