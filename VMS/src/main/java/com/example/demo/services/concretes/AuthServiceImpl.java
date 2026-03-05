@@ -10,6 +10,7 @@ import com.example.demo.repositories.VendorRepository;
 import com.example.demo.services.abstracts.AuthService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,13 +19,14 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final VendorRepository vendorRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public LoginResponse login(LoginRequest request) {
         Users user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException("Invalid username or password"));
 
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new EntityNotFoundException("Invalid username or password");
         }
 
@@ -47,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
 
         Users user = new Users();
         user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmail(request.getEmail());
         user.setPersonnelName(request.getPersonnelName());
         user.setPersonnelSurname(request.getPersonnelSurname());

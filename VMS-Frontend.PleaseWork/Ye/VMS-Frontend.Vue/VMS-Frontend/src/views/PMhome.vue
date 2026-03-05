@@ -4,7 +4,7 @@
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-icon blue">
-          <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.86.18-1a3 3 0 00-6 0c0 .14.11.56.18 1H10c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-1a1 1 0 112 0c0 .14-.06.27-.09.41A.999.999 0 0113 5zm7 15H10V8h2v2h6V8h2v12z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
         </div>
         <div>
           <div class="stat-value">{{ stats.totalProjects }}</div>
@@ -36,6 +36,26 @@
         <div>
           <div class="stat-value">{{ stats.vendors }}</div>
           <div class="stat-label">Active Vendors</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pie Chart Card -->
+    <div class="card chart-card">
+      <div class="chart-container">
+        <Pie v-if="chartReady" :data="chartData" :options="chartOptions" />
+        <div v-else class="loading-text">Loading chart…</div>
+      </div>
+      <div class="chart-legend">
+        <div class="legend-title">Task Distribution</div>
+        <div class="legend-items">
+          <div class="legend-item"><span class="legend-dot" style="background:#64748b"></span> Todo <strong>{{ dashStats.todoCount }}</strong></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> In Progress <strong>{{ dashStats.inProgressCount }}</strong></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#22c55e"></span> Completed <strong>{{ dashStats.completedCount }}</strong></div>
+        </div>
+        <div class="sprint-countdown" v-if="dashStats.businessDaysLeft >= 0">
+          <div class="countdown-number">{{ dashStats.businessDaysLeft }}</div>
+          <div class="countdown-label">business days left</div>
         </div>
       </div>
     </div>
@@ -82,7 +102,7 @@
         </div>
         <div v-if="loadingData" class="loading-text">Loading…</div>
         <div v-else class="sprint-table-wrap">
-          <table class="sprint-table" v-if="activeSprints.length > 0">
+          <table class="sprint-table" v-if="activeSprintsList.length > 0">
             <thead>
               <tr>
                 <th>Sprint</th>
@@ -93,7 +113,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="s in activeSprints" :key="s.id">
+              <tr v-for="s in activeSprintsList" :key="s.id">
                 <td>{{ s.sprintName }}</td>
                 <td>{{ s.projectName }}</td>
                 <td>{{ s.goal?.slice(0, 60) }}…</td>
@@ -112,31 +132,68 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { http } from "../lib/http.js";
+import { Pie } from "vue-chartjs";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const projects = ref([]);
 const announcements = ref([]);
 const sprints = ref([]);
 const loadingData = ref(true);
+const chartReady = ref(false);
+const dashStats = ref({ todoCount: 0, inProgressCount: 0, completedCount: 0, businessDaysLeft: -1 });
 
-const activeSprints = computed(() => sprints.value.filter(s => s.status === "ACTIVE"));
+const activeSprintsList = computed(() => sprints.value.filter(s => s.status === "ACTIVE"));
 
 const stats = computed(() => ({
   totalProjects: projects.value.length,
-  activeSprints: activeSprints.value.length,
-  openTasks: 0, // will be enriched
+  activeSprints: activeSprintsList.value.length,
+  openTasks: dashStats.value.todoCount + dashStats.value.inProgressCount,
   vendors: [...new Set(projects.value.map(p => p.vendorId))].filter(Boolean).length,
 }));
 
+const chartData = computed(() => ({
+  labels: ["Todo", "In Progress", "Completed"],
+  datasets: [{
+    data: [dashStats.value.todoCount, dashStats.value.inProgressCount, dashStats.value.completedCount],
+    backgroundColor: ["#64748b", "#f59e0b", "#22c55e"],
+    borderColor: ["#475569", "#d97706", "#16a34a"],
+    borderWidth: 2,
+    hoverOffset: 8,
+  }],
+}));
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: "#0f1a2e",
+      titleColor: "#e2eaff",
+      bodyColor: "#d1deff",
+      borderColor: "rgba(255,255,255,0.1)",
+      borderWidth: 1,
+      cornerRadius: 10,
+      padding: 12,
+    },
+  },
+};
+
 onMounted(async () => {
   try {
-    const [pRes, sRes, aRes] = await Promise.all([
+    const [pRes, sRes, aRes, dRes] = await Promise.all([
       http.get("/api/projects"),
       http.get("/api/sprints"),
       http.get("/api/announcements"),
+      http.get("/api/dashboard/stats"),
     ]);
     projects.value = pRes.data;
     sprints.value = sRes.data;
     announcements.value = aRes.data;
+    dashStats.value = dRes.data;
+    chartReady.value = true;
   } catch (e) {
     console.error(e);
   } finally {
@@ -175,6 +232,33 @@ onMounted(async () => {
 
 .stat-value { font-size: 26px; font-weight: 800; color: #f3f7ff; }
 .stat-label { font-size: 12px; color: rgba(200,215,255,0.55); margin-top: 2px; }
+
+/* Pie Chart Card */
+.chart-card {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 24px;
+}
+.chart-container { width: 180px; height: 180px; flex-shrink: 0; }
+.chart-legend { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+.legend-title { font-size: 15px; font-weight: 700; color: #e2eaff; }
+.legend-items { display: flex; flex-direction: column; gap: 8px; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(200,215,255,0.7); }
+.legend-item strong { margin-left: auto; color: #f3f7ff; font-size: 16px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.sprint-countdown {
+  margin-top: 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(99,102,241,0.08);
+  border: 1px solid rgba(99,102,241,0.2);
+  border-radius: 12px;
+}
+.countdown-number { font-size: 28px; font-weight: 800; color: #a5b4fc; }
+.countdown-label { font-size: 13px; color: rgba(200,215,255,0.6); }
 
 .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 

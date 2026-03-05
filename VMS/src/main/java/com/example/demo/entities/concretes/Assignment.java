@@ -36,6 +36,14 @@ public class Assignment extends BaseEntity {
     @Column(name = "status")
     private AssignmentStatus status = AssignmentStatus.TODO;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sprint_id")
+    private Sprint sprint;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assignee_id")
+    private Users assignee;
+
     @Column(name = "assigned_at")
     private LocalDate assignedAt;
 

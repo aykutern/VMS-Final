@@ -16,6 +16,9 @@ public class AssignmentResponse {
 
     private Integer id;
     private Integer projectId;
+    private Integer sprintId;
+    private Integer assigneeId;
+    private String assigneeName;
 
     private String name;
     private AssignmentPriority priority;

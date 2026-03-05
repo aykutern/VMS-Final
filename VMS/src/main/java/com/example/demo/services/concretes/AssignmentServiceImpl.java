@@ -5,9 +5,13 @@ import com.example.demo.dto.request.UpdateAssignmentStatusRequest;
 import com.example.demo.dto.response.AssignmentResponse;
 import com.example.demo.entities.concretes.Assignment;
 import com.example.demo.entities.concretes.Project;
+import com.example.demo.entities.concretes.Sprint;
+import com.example.demo.entities.concretes.Users;
 import com.example.demo.enums.AssignmentStatus;
 import com.example.demo.repositories.AssignmentRepository;
 import com.example.demo.repositories.ProjectRepository;
+import com.example.demo.repositories.SprintRepository;
+import com.example.demo.repositories.UserRepository;
 import com.example.demo.services.abstracts.AssignmentService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +26,8 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     private final AssignmentRepository assignmentRepository;
     private final ProjectRepository projectRepository;
+    private final SprintRepository sprintRepository;
+    private final UserRepository userRepository;
 
     private static final int ACTIVE = 1;
     private static final int DELETED = 0;
@@ -35,13 +41,21 @@ public class AssignmentServiceImpl implements AssignmentService {
         a.setProject(project);
         a.setName(request.getName());
         a.setPriority(request.getPriority());
-        // status default TODO is already in entity
         a.setAssignedAt(request.getAssignedAt() != null ? request.getAssignedAt() : LocalDate.now());
-        // completedAt stays null
 
-        // ensure active
+        if (request.getSprintId() != null) {
+            Sprint sprint = sprintRepository.findById(request.getSprintId())
+                    .orElseThrow(() -> new EntityNotFoundException("Sprint not found: " + request.getSprintId()));
+            a.setSprint(sprint);
+        }
+
+        if (request.getAssigneeId() != null) {
+            Users assignee = userRepository.findById(request.getAssigneeId())
+                    .orElseThrow(() -> new EntityNotFoundException("User not found: " + request.getAssigneeId()));
+            a.setAssignee(assignee);
+        }
+
         a.setIsActive(ACTIVE);
-
         return toResponse(assignmentRepository.save(a));
     }
 
@@ -50,7 +64,6 @@ public class AssignmentServiceImpl implements AssignmentService {
         Assignment a = assignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Assignment not found: " + id));
 
-        // hide soft-deleted
         if (a.getIsActive() != ACTIVE) {
             throw new EntityNotFoundException("Assignment not found: " + id);
         }
@@ -59,11 +72,16 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public List<AssignmentResponse> getAll(Integer projectId) {
-        // only active assignments
-        List<Assignment> list = (projectId == null)
-                ? assignmentRepository.findByIsActive(ACTIVE)
-                : assignmentRepository.findByProject_IdAndIsActive(projectId, ACTIVE);
+    public List<AssignmentResponse> getAll(Integer projectId, Integer sprintId) {
+        List<Assignment> list;
+
+        if (sprintId != null) {
+            list = assignmentRepository.findBySprint_IdAndIsActive(sprintId, ACTIVE);
+        } else if (projectId != null) {
+            list = assignmentRepository.findByProject_IdAndIsActive(projectId, ACTIVE);
+        } else {
+            list = assignmentRepository.findByIsActive(ACTIVE);
+        }
 
         return list.stream().map(this::toResponse).toList();
     }
@@ -73,7 +91,6 @@ public class AssignmentServiceImpl implements AssignmentService {
         Assignment a = assignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Assignment not found: " + id));
 
-        // prevent updates on soft-deleted
         if (a.getIsActive() != ACTIVE) {
             throw new EntityNotFoundException("Assignment not found: " + id);
         }
@@ -85,24 +102,20 @@ public class AssignmentServiceImpl implements AssignmentService {
             throw new IllegalArgumentException("status is required");
         }
 
-        // allow no-op
         if (newStatus == oldStatus) {
             return toResponse(a);
         }
 
-        // ✅ Transition rules: TODO -> IN_PROGRESS -> COMPLETED only
         if (!isAllowedTransition(oldStatus, newStatus)) {
             throw new IllegalArgumentException("Invalid status transition: " + oldStatus + " -> " + newStatus);
         }
 
         a.setStatus(newStatus);
 
-        // Optional timestamps
         if (newStatus == AssignmentStatus.IN_PROGRESS && a.getAssignedAt() == null) {
             a.setAssignedAt(LocalDate.now());
         }
 
-        // When moving to COMPLETED, set completed_at automatically
         if (newStatus == AssignmentStatus.COMPLETED && a.getCompletedAt() == null) {
             a.setCompletedAt(LocalDate.now());
         }
@@ -115,7 +128,6 @@ public class AssignmentServiceImpl implements AssignmentService {
         Assignment a = assignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Assignment not found: " + id));
 
-        // soft delete
         if (a.getIsActive() == ACTIVE) {
             a.setIsActive(DELETED);
             assignmentRepository.save(a);
@@ -134,6 +146,11 @@ public class AssignmentServiceImpl implements AssignmentService {
         AssignmentResponse r = new AssignmentResponse();
         r.setId(a.getId());
         r.setProjectId(a.getProject() != null ? a.getProject().getId() : null);
+        r.setSprintId(a.getSprint() != null ? a.getSprint().getId() : null);
+        r.setAssigneeId(a.getAssignee() != null ? a.getAssignee().getId() : null);
+        r.setAssigneeName(a.getAssignee() != null
+                ? a.getAssignee().getPersonnelName() + " " + a.getAssignee().getPersonnelSurname()
+                : null);
         r.setName(a.getName());
         r.setPriority(a.getPriority());
         r.setStatus(a.getStatus());

@@ -17,6 +17,7 @@ import VendorProjects from "../views/vendor/VendorProjects.vue";
 import VendorSprints from "../views/vendor/VendorSprints.vue";
 import VendorAssignments from "../views/vendor/VendorAssignments.vue";
 import VendorPersonnel from "../views/vendor/VendorPersonnel.vue";
+import VendorPerformance from "../views/vendor/VendorPerformance.vue";
 
 // Personnel Views
 import PersonnelHome from "../views/PersonnelHome.vue";
@@ -54,6 +55,7 @@ const routes = [
       { path: "sprints", name: "vendor-sprints", component: VendorSprints },
       { path: "assignments", name: "vendor-assignments", component: VendorAssignments },
       { path: "personnel", name: "vendor-personnel", component: VendorPersonnel },
+      { path: "performance", name: "vendor-performance", component: VendorPerformance },
     ],
   },
 
