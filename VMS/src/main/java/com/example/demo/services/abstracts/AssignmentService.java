@@ -9,8 +9,12 @@ import java.util.List;
 
 public interface AssignmentService {
     AssignmentResponse create(CreateAssignmentRequest request);
+
     AssignmentResponse getById(Integer id);
-    List<AssignmentResponse> getAll(Integer projectId);
+
+    List<AssignmentResponse> getAll(Integer projectId, Integer sprintId);
+
     AssignmentResponse updateStatus(Integer id, UpdateAssignmentStatusRequest request);
+
     void delete(Integer id);
 }

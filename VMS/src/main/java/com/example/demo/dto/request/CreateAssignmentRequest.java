@@ -23,7 +23,9 @@ public class CreateAssignmentRequest {
     @NotNull
     private AssignmentPriority priority;
 
+    private Integer sprintId;
+
+    private Integer assigneeId;
+
     private LocalDate assignedAt;
 }
-
-

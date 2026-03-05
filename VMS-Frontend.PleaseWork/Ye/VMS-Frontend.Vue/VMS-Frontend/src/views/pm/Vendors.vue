@@ -1,95 +1,146 @@
 <template>
   <div class="vendors-page">
-    <div class="page-header">
-      <h2>Vendors</h2>
-      <button class="primary-btn" @click="showModal = true">+ Add Vendor</button>
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <button :class="['tab-btn', activeTab === 'vendors' ? 'active' : '']" @click="activeTab = 'vendors'">Vendors</button>
+      <button :class="['tab-btn', activeTab === 'performance' ? 'active' : '']" @click="activeTab = 'performance'; loadPerformance()">Vendor Performance</button>
     </div>
 
-    <div v-if="loading" class="loading-text">Loading vendors…</div>
-    <div v-else class="vendor-grid">
-      <div
-        v-for="v in vendors"
-        :key="v.id"
-        class="vendor-card"
-        @dblclick="openDetail(v)"
-        title="Double-click to view details"
-      >
-        <div class="vendor-avatar">{{ v.vendorName?.[0] ?? 'V' }}</div>
-        <div class="vendor-info">
-          <div class="vendor-name">{{ v.vendorName }}</div>
-          <div class="vendor-projects">{{ projectCount(v.id) }} project(s)</div>
-        </div>
-        <div class="project-list">
-          <div v-for="p in projectsByVendor(v.id)" :key="p.id" class="project-chip">
-            {{ p.projectName }}
-          </div>
-        </div>
-        <div class="dbl-hint">Double-click for details</div>
+    <!-- ═══ VENDORS TAB ═══ -->
+    <template v-if="activeTab === 'vendors'">
+      <div class="page-header">
+        <h2>Vendors</h2>
+        <button class="primary-btn" @click="showModal = true">+ Add Vendor</button>
       </div>
-      <div v-if="vendors.length === 0" class="empty-state">No vendors yet.</div>
-    </div>
 
-    <!-- Add Vendor Modal -->
-    <div v-if="showModal" class="modal-backdrop" @click.self="showModal = false">
-      <div class="modal">
-        <div class="modal-header"><h3>Add Vendor</h3><button class="close-btn" @click="showModal = false">✕</button></div>
-        <div class="form-group"><label>Vendor Name</label><input v-model="form.vendorName" placeholder="e.g. TechCorp Solutions" /></div>
-        <div class="modal-actions">
-          <button class="secondary-btn" @click="showModal = false">Cancel</button>
-          <button class="primary-btn" @click="createVendor" :disabled="saving">{{ saving ? 'Saving…' : 'Add Vendor' }}</button>
+      <div v-if="loading" class="loading-text">Loading vendors…</div>
+      <div v-else class="vendor-grid">
+        <div
+          v-for="v in vendors"
+          :key="v.id"
+          class="vendor-card"
+          @dblclick="openDetail(v)"
+          title="Double-click to view details"
+        >
+          <div class="vendor-avatar">{{ v.vendorName?.[0] ?? 'V' }}</div>
+          <div class="vendor-info">
+            <div class="vendor-name">{{ v.vendorName }}</div>
+            <div class="vendor-projects">{{ projectCount(v.id) }} project(s)</div>
+          </div>
+          <div class="project-list">
+            <div v-for="p in projectsByVendor(v.id)" :key="p.id" class="project-chip">
+              {{ p.projectName }}
+            </div>
+          </div>
+          <div class="dbl-hint">Double-click for details</div>
         </div>
-        <div v-if="formError" class="form-error">{{ formError }}</div>
+        <div v-if="vendors.length === 0" class="empty-state">No vendors yet.</div>
       </div>
-    </div>
 
-    <!-- Vendor Detail Popup (double-click) -->
-    <div v-if="detailVendor" class="modal-backdrop" @click.self="closeDetail">
-      <div class="detail-modal">
-        <div class="detail-header">
-          <div class="detail-avatar">{{ detailVendor.vendorName?.[0] }}</div>
-          <div>
-            <h3>{{ detailVendor.vendorName }}</h3>
-            <p>{{ projectCount(detailVendor.id) }} project(s) assigned</p>
+      <!-- Add Vendor Modal -->
+      <div v-if="showModal" class="modal-backdrop" @click.self="showModal = false">
+        <div class="modal">
+          <div class="modal-header"><h3>Add Vendor</h3><button class="close-btn" @click="showModal = false">✕</button></div>
+          <div class="form-group"><label>Vendor Name</label><input v-model="form.vendorName" placeholder="e.g. TechCorp Solutions" /></div>
+          <div class="modal-actions">
+            <button class="secondary-btn" @click="showModal = false">Cancel</button>
+            <button class="primary-btn" @click="createVendor" :disabled="saving">{{ saving ? 'Saving…' : 'Add Vendor' }}</button>
           </div>
-          <button class="close-btn" @click="closeDetail">✕</button>
-        </div>
-
-        <!-- Projects section -->
-        <div class="detail-section">
-          <div class="detail-section-title">Projects</div>
-          <div class="detail-chips">
-            <span v-for="p in projectsByVendor(detailVendor.id)" :key="p.id" class="project-chip">{{ p.projectName }}</span>
-            <span v-if="projectsByVendor(detailVendor.id).length === 0" class="empty-inline">No projects</span>
-          </div>
-        </div>
-
-        <!-- Personnel section -->
-        <div class="detail-section">
-          <div class="detail-section-title">Personnel ({{ detailEmployees.length }})</div>
-          <div v-if="loadingEmployees" class="loading-text">Loading…</div>
-          <div v-else class="personnel-table-wrap">
-            <table class="personnel-table" v-if="detailEmployees.length > 0">
-              <thead>
-                <tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th></tr>
-              </thead>
-              <tbody>
-                <tr v-for="e in detailEmployees" :key="e.id">
-                  <td>{{ e.personnelName }} {{ e.personnelSurname }}</td>
-                  <td>{{ e.username }}</td>
-                  <td>{{ e.email }}</td>
-                  <td>
-                    <span :class="['role-badge', e.userType === 'VENDOR_ADMIN' ? 'purple' : 'blue']">
-                      {{ e.userType === 'VENDOR_ADMIN' ? 'Admin' : 'Developer' }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div v-else class="empty-text">No personnel assigned to this vendor.</div>
-          </div>
+          <div v-if="formError" class="form-error">{{ formError }}</div>
         </div>
       </div>
-    </div>
+
+      <!-- Vendor Detail Popup -->
+      <div v-if="detailVendor" class="modal-backdrop" @click.self="closeDetail">
+        <div class="detail-modal">
+          <div class="detail-header">
+            <div class="detail-avatar">{{ detailVendor.vendorName?.[0] }}</div>
+            <div>
+              <h3>{{ detailVendor.vendorName }}</h3>
+              <p>{{ projectCount(detailVendor.id) }} project(s) assigned</p>
+            </div>
+            <button class="close-btn" @click="closeDetail">✕</button>
+          </div>
+          <div class="detail-section">
+            <div class="detail-section-title">Projects</div>
+            <div class="detail-chips">
+              <span v-for="p in projectsByVendor(detailVendor.id)" :key="p.id" class="project-chip">{{ p.projectName }}</span>
+              <span v-if="projectsByVendor(detailVendor.id).length === 0" class="empty-inline">No projects</span>
+            </div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-section-title">Personnel ({{ detailEmployees.length }})</div>
+            <div v-if="loadingEmployees" class="loading-text">Loading…</div>
+            <div v-else class="personnel-table-wrap">
+              <table class="personnel-table" v-if="detailEmployees.length > 0">
+                <thead>
+                  <tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th></tr>
+                </thead>
+                <tbody>
+                  <tr v-for="e in detailEmployees" :key="e.id">
+                    <td>{{ e.personnelName }} {{ e.personnelSurname }}</td>
+                    <td>{{ e.username }}</td>
+                    <td>{{ e.email }}</td>
+                    <td>
+                      <span :class="['role-badge', e.userType === 'VENDOR_ADMIN' ? 'purple' : 'blue']">
+                        {{ e.userType === 'VENDOR_ADMIN' ? 'Admin' : 'Developer' }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div v-else class="empty-text">No personnel assigned to this vendor.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- ═══ VENDOR PERFORMANCE TAB ═══ -->
+    <template v-if="activeTab === 'performance'">
+      <div class="page-header">
+        <h2>Vendor Performance</h2>
+      </div>
+
+      <div v-if="loadingPerf" class="loading-text">Loading performance data…</div>
+      <div v-else>
+        <table class="perf-table" v-if="perfData.length > 0">
+          <thead>
+            <tr>
+              <th>Vendor</th>
+              <th>Completed Sprints</th>
+              <th>Total Sprints</th>
+              <th>Completed Tasks</th>
+              <th>Total Tasks</th>
+              <th>Completion Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="v in perfData" :key="v.vendorId">
+              <td>
+                <div class="perf-vendor">
+                  <div class="perf-avatar">{{ v.vendorName?.[0] }}</div>
+                  {{ v.vendorName }}
+                </div>
+              </td>
+              <td>{{ v.completedSprints }}</td>
+              <td>{{ v.totalSprints }}</td>
+              <td>{{ v.completedTasks }}</td>
+              <td>{{ v.totalTasks }}</td>
+              <td>
+                <div class="rate-bar-wrap">
+                  <div class="rate-bar">
+                    <div class="rate-fill" :style="{ width: completionRate(v) + '%' }"></div>
+                  </div>
+                  <span class="rate-label">{{ completionRate(v) }}%</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div v-else class="empty-state">No performance data available.</div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -97,6 +148,9 @@
 import { ref, onMounted } from "vue";
 import { http } from "../../lib/http.js";
 
+const activeTab = ref("vendors");
+
+// Vendors tab state
 const vendors = ref([]);
 const projects = ref([]);
 const loading = ref(true);
@@ -104,11 +158,13 @@ const showModal = ref(false);
 const saving = ref(false);
 const formError = ref(null);
 const form = ref({ vendorName: "" });
-
-// Detail popup state
 const detailVendor = ref(null);
 const detailEmployees = ref([]);
 const loadingEmployees = ref(false);
+
+// Performance tab state
+const perfData = ref([]);
+const loadingPerf = ref(false);
 
 onMounted(async () => {
   try {
@@ -150,10 +206,32 @@ async function createVendor() {
   } catch (e) { formError.value = e?.response?.data?.message ?? "Failed to add vendor."; }
   finally { saving.value = false; }
 }
+
+async function loadPerformance() {
+  if (perfData.value.length > 0) return; // already loaded
+  loadingPerf.value = true;
+  try {
+    const r = await http.get("/api/dashboard/vendor-performance");
+    perfData.value = r.data;
+  } catch (e) { console.error(e); }
+  finally { loadingPerf.value = false; }
+}
+
+function completionRate(v) {
+  if (v.totalTasks === 0) return 0;
+  return Math.round((v.completedTasks / v.totalTasks) * 100);
+}
 </script>
 
 <style scoped>
 .vendors-page { display:flex; flex-direction:column; gap:24px; }
+
+/* Tab bar */
+.tab-bar { display:flex; gap:4px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:4px; width:fit-content; }
+.tab-btn { padding:9px 20px; border:none; border-radius:10px; background:transparent; color:rgba(200,215,255,0.5); font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+.tab-btn.active { background:linear-gradient(135deg,#3b82f6,#6366f1); color:#fff; }
+.tab-btn:not(.active):hover { color:#e2eaff; background:rgba(255,255,255,0.06); }
+
 .page-header { display:flex; align-items:center; justify-content:space-between; }
 .page-header h2 { margin:0; font-size:20px; font-weight:800; color:#f3f7ff; }
 .vendor-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
@@ -177,7 +255,6 @@ async function createVendor() {
 .detail-chips { display:flex; flex-wrap:wrap; gap:6px; }
 .empty-inline { font-size:13px; color:rgba(200,215,255,0.3); }
 
-/* Personnel table */
 .personnel-table-wrap { overflow-x:auto; }
 .personnel-table { width:100%; border-collapse:collapse; font-size:13px; }
 .personnel-table th { text-align:left; padding:9px 12px; color:rgba(200,215,255,0.5); font-weight:600; border-bottom:1px solid rgba(255,255,255,0.07); white-space:nowrap; }
@@ -186,6 +263,19 @@ async function createVendor() {
 .role-badge { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; }
 .role-badge.blue { background:rgba(59,130,246,0.15); color:#93c5fd; }
 .role-badge.purple { background:rgba(168,85,247,0.15); color:#d8b4fe; }
+
+/* Performance table */
+.perf-table { width:100%; border-collapse:collapse; font-size:13px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; overflow:hidden; }
+.perf-table th { text-align:left; padding:14px 16px; color:rgba(200,215,255,0.5); font-weight:600; border-bottom:1px solid rgba(255,255,255,0.07); white-space:nowrap; background:rgba(255,255,255,0.02); }
+.perf-table td { padding:14px 16px; color:#d1deff; border-bottom:1px solid rgba(255,255,255,0.04); }
+.perf-table tr:last-child td { border-bottom:none; }
+.perf-table tr:hover td { background:rgba(255,255,255,0.03); }
+.perf-vendor { display:flex; align-items:center; gap:10px; font-weight:600; color:#e2eaff; }
+.perf-avatar { width:32px; height:32px; border-radius:10px; background:linear-gradient(135deg,#6366f1,#a855f7); display:grid; place-items:center; font-size:14px; font-weight:800; color:#fff; flex-shrink:0; }
+.rate-bar-wrap { display:flex; align-items:center; gap:8px; }
+.rate-bar { width:80px; height:6px; background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden; }
+.rate-fill { height:100%; background:linear-gradient(90deg,#22c55e,#16a34a); border-radius:999px; transition:width 0.3s; }
+.rate-label { font-size:12px; color:#86efac; font-weight:600; }
 
 .primary-btn { padding:10px 20px; background:linear-gradient(135deg,#3b82f6,#6366f1); color:#fff; border:none; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer; }
 .primary-btn:disabled { opacity:0.5; cursor:not-allowed; }

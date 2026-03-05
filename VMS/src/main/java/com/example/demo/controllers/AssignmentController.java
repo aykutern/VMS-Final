@@ -3,8 +3,6 @@ package com.example.demo.controllers;
 import com.example.demo.dto.request.CreateAssignmentRequest;
 import com.example.demo.dto.request.UpdateAssignmentStatusRequest;
 import com.example.demo.dto.response.AssignmentResponse;
-import com.example.demo.entities.concretes.Assignment;
-import com.example.demo.repositories.AssignmentRepository;
 import com.example.demo.services.abstracts.AssignmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,10 +24,8 @@ public class AssignmentController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AssignmentResponse create(
-            @Parameter(description = "Optional user header for auditing", example = "aykut.eren")
-            @RequestHeader(value = "X-User", required = false) String xUser,
-            @Valid @RequestBody CreateAssignmentRequest request
-    ) {
+            @Parameter(description = "Optional user header for auditing", example = "aykut.eren") @RequestHeader(value = "X-User", required = false) String xUser,
+            @Valid @RequestBody CreateAssignmentRequest request) {
         return assignmentService.create(request);
     }
 
@@ -39,18 +35,19 @@ public class AssignmentController {
         return assignmentService.getById(id);
     }
 
-    @Operation(summary = "List assignments (optional projectId filter)")
+    @Operation(summary = "List assignments (optional projectId / sprintId filter)")
     @GetMapping
-    public List<AssignmentResponse> getAll(@RequestParam(required = false) Integer projectId) {
-        return assignmentService.getAll(projectId);
+    public List<AssignmentResponse> getAll(
+            @RequestParam(required = false) Integer projectId,
+            @RequestParam(required = false) Integer sprintId) {
+        return assignmentService.getAll(projectId, sprintId);
     }
 
     @Operation(summary = "Update assignment status")
     @PatchMapping("/{id}/status")
     public AssignmentResponse updateStatus(
             @PathVariable Integer id,
-            @Valid @RequestBody UpdateAssignmentStatusRequest request
-    ) {
+            @Valid @RequestBody UpdateAssignmentStatusRequest request) {
         return assignmentService.updateStatus(id, request);
     }
 

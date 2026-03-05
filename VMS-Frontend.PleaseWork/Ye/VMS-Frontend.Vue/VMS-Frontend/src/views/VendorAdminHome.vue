@@ -16,7 +16,7 @@
           <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
         </div>
         <div>
-          <div class="stat-value">{{ activeSprints }}</div>
+          <div class="stat-value">{{ activeSprintsCount }}</div>
           <div class="stat-label">Active Sprints</div>
         </div>
       </div>
@@ -34,8 +34,28 @@
           <svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
         </div>
         <div>
-          <div class="stat-value">{{ completedTasks }}</div>
+          <div class="stat-value">{{ completedTasksCount }}</div>
           <div class="stat-label">Completed Tasks</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pie Chart Card -->
+    <div class="card chart-card">
+      <div class="chart-container">
+        <Pie v-if="chartReady" :data="chartData" :options="chartOptions" />
+        <div v-else class="loading-text">Loading chart…</div>
+      </div>
+      <div class="chart-legend">
+        <div class="legend-title">Task Distribution</div>
+        <div class="legend-items">
+          <div class="legend-item"><span class="legend-dot" style="background:#64748b"></span> Todo <strong>{{ dashStats.todoCount }}</strong></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> In Progress <strong>{{ dashStats.inProgressCount }}</strong></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#22c55e"></span> Completed <strong>{{ dashStats.completedCount }}</strong></div>
+        </div>
+        <div class="sprint-countdown" v-if="dashStats.businessDaysLeft >= 0">
+          <div class="countdown-number">{{ dashStats.businessDaysLeft }}</div>
+          <div class="countdown-label">business days left</div>
         </div>
       </div>
     </div>
@@ -109,12 +129,18 @@
 import { ref, computed, onMounted } from "vue";
 import { http } from "../lib/http.js";
 import { getCurrentUser } from "../services/authService.js";
+import { Pie } from "vue-chartjs";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const user = getCurrentUser();
 const projects = ref([]);
 const sprints = ref([]);
 const assignments = ref([]);
 const loading = ref(true);
+const chartReady = ref(false);
+const dashStats = ref({ todoCount: 0, inProgressCount: 0, completedCount: 0, businessDaysLeft: -1 });
 
 const columns = [
   { status: "TODO", label: "To Do", color: "gray" },
@@ -122,22 +148,53 @@ const columns = [
   { status: "COMPLETED", label: "Completed", color: "green" },
 ];
 
-const activeSprints = computed(() => sprints.value.filter(s => s.status === "ACTIVE").length);
+const activeSprintsCount = computed(() => sprints.value.filter(s => s.status === "ACTIVE").length);
 const pendingTasks = computed(() => assignments.value.filter(a => a.status === "TODO" || a.status === "IN_PROGRESS").length);
-const completedTasks = computed(() => assignments.value.filter(a => a.status === "COMPLETED").length);
+const completedTasksCount = computed(() => assignments.value.filter(a => a.status === "COMPLETED").length);
 function tasksByStatus(status) { return assignments.value.filter(a => a.status === status); }
+
+const chartData = computed(() => ({
+  labels: ["Todo", "In Progress", "Completed"],
+  datasets: [{
+    data: [dashStats.value.todoCount, dashStats.value.inProgressCount, dashStats.value.completedCount],
+    backgroundColor: ["#64748b", "#f59e0b", "#22c55e"],
+    borderColor: ["#475569", "#d97706", "#16a34a"],
+    borderWidth: 2,
+    hoverOffset: 8,
+  }],
+}));
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: "#0f1a2e",
+      titleColor: "#e2eaff",
+      bodyColor: "#d1deff",
+      borderColor: "rgba(255,255,255,0.1)",
+      borderWidth: 1,
+      cornerRadius: 10,
+      padding: 12,
+    },
+  },
+};
 
 onMounted(async () => {
   try {
     const vendorId = user?.vendorId;
-    const [pRes, sRes, aRes] = await Promise.all([
+    const [pRes, sRes, aRes, dRes] = await Promise.all([
       http.get(vendorId ? `/api/projects?vendorId=${vendorId}` : "/api/projects"),
       http.get("/api/sprints"),
       http.get("/api/assignments"),
+      http.get(vendorId ? `/api/dashboard/stats?vendorId=${vendorId}` : "/api/dashboard/stats"),
     ]);
     projects.value = pRes.data;
     sprints.value = sRes.data;
     assignments.value = aRes.data;
+    dashStats.value = dRes.data;
+    chartReady.value = true;
   } catch (e) { console.error(e); }
   finally { loading.value = false; }
 });
@@ -155,6 +212,20 @@ onMounted(async () => {
 .stat-icon.purple { background:rgba(168,85,247,0.2); }
 .stat-value { font-size:26px; font-weight:800; color:#f3f7ff; }
 .stat-label { font-size:12px; color:rgba(200,215,255,0.55); margin-top:2px; }
+
+/* Pie Chart Card */
+.chart-card { display:flex; align-items:center; gap:32px; padding:24px; }
+.chart-container { width:180px; height:180px; flex-shrink:0; }
+.chart-legend { flex:1; display:flex; flex-direction:column; gap:14px; }
+.legend-title { font-size:15px; font-weight:700; color:#e2eaff; }
+.legend-items { display:flex; flex-direction:column; gap:8px; }
+.legend-item { display:flex; align-items:center; gap:8px; font-size:13px; color:rgba(200,215,255,0.7); }
+.legend-item strong { margin-left:auto; color:#f3f7ff; font-size:16px; }
+.legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.sprint-countdown { margin-top:8px; display:flex; align-items:baseline; gap:8px; padding:12px 16px; background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2); border-radius:12px; }
+.countdown-number { font-size:28px; font-weight:800; color:#a5b4fc; }
+.countdown-label { font-size:13px; color:rgba(200,215,255,0.6); }
+
 .content-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
 .card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px; }
 .card.full-width { grid-column:1/-1; }
