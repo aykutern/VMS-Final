@@ -36,15 +36,17 @@
     <!-- Sprint Detail Modal -->
     <div v-if="detailSprint" class="modal-backdrop" @click.self="detailSprint = null">
       <div class="detail-modal">
+        <button class="close-btn" @click="detailSprint = null">✕</button>
         <div class="detail-header">
-          <div>
+          <div class="detail-title-block">
             <h3>{{ detailSprint.sprintName }}</h3>
-            <p>{{ detailSprint.projectName }} · {{ detailSprint.startDate }} → {{ detailSprint.endDate }}</p>
+            <div class="detail-meta">
+              <span :class="['badge', detailSprint.status === 'ACTIVE' ? 'green' : detailSprint.status === 'COMPLETED' ? 'gray' : 'amber']">
+                {{ detailSprint.status }}
+              </span>
+              <p>{{ detailSprint.projectName }} · {{ detailSprint.startDate }} → {{ detailSprint.endDate }}</p>
+            </div>
           </div>
-          <span :class="['badge', detailSprint.status === 'ACTIVE' ? 'green' : detailSprint.status === 'COMPLETED' ? 'gray' : 'amber']">
-            {{ detailSprint.status }}
-          </span>
-          <button class="close-btn" @click="detailSprint = null">✕</button>
         </div>
         <div class="detail-goal" v-if="detailSprint.goal">{{ detailSprint.goal }}</div>
 
@@ -107,7 +109,7 @@ onMounted(async () => {
   try {
     const vendorId = user?.vendorId;
     const [sRes, pRes] = await Promise.all([
-      http.get("/api/sprints"),
+      http.get(vendorId ? `/api/sprints?vendorId=${vendorId}` : "/api/sprints"),
       http.get(vendorId ? `/api/projects?vendorId=${vendorId}` : "/api/projects"),
     ]);
     sprints.value = sRes.data;
@@ -117,7 +119,13 @@ onMounted(async () => {
 });
 
 async function fetchSprints() {
-  const url = filterProject.value ? `/api/sprints?projectId=${filterProject.value}` : "/api/sprints";
+  const vendorId = user?.vendorId;
+  let url;
+  if (filterProject.value) {
+    url = `/api/sprints?projectId=${filterProject.value}`;
+  } else {
+    url = vendorId ? `/api/sprints?vendorId=${vendorId}` : "/api/sprints";
+  }
   const r = await http.get(url);
   sprints.value = r.data;
 }
@@ -145,10 +153,15 @@ async function fetchSprints() {
 .badge.gray { background:rgba(148,163,184,0.12); color:#94a3b8; }
 
 /* Detail Modal */
-.detail-modal { background:#0f1a2e; border:1px solid rgba(255,255,255,0.12); border-radius:20px; padding:28px; width:min(720px,95vw); display:flex; flex-direction:column; gap:20px; max-height:85vh; overflow-y:auto; }
-.detail-header { display:flex; align-items:flex-start; gap:12px; }
-.detail-header h3 { margin:0; font-size:18px; font-weight:800; color:#f3f7ff; flex:1; }
-.detail-header p { margin:4px 0 0; font-size:12px; color:rgba(200,215,255,0.5); }
+/* Detail Modal */
+.detail-modal { background:#0f1a2e; border:1px solid rgba(255,255,255,0.12); border-radius:20px; padding:28px; width:min(720px,95vw); display:flex; flex-direction:column; gap:20px; max-height:85vh; overflow-y:auto; position:relative; }
+.close-btn { position:absolute; top:16px; right:16px; background:transparent; border:none; color:rgba(200,215,255,0.5); font-size:20px; cursor:pointer; line-height:1; z-index:1; }
+.close-btn:hover { color:#e2eaff; }
+.detail-header { padding-right:36px; }
+.detail-title-block { flex:1; min-width:0; }
+.detail-meta { display:flex; align-items:center; gap:10px; margin-top:6px; }
+.detail-header h3 { margin:0; font-size:18px; font-weight:800; color:#f3f7ff; }
+.detail-meta p { margin:0; font-size:12px; color:rgba(200,215,255,0.5); }
 .detail-goal { font-size:13px; color:rgba(200,215,255,0.6); line-height:1.6; padding:12px; background:rgba(255,255,255,0.03); border-radius:10px; }
 .detail-section { border-top:1px solid rgba(255,255,255,0.07); padding-top:16px; }
 .detail-section-title { font-size:12px; font-weight:700; color:rgba(200,215,255,0.5); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:12px; }

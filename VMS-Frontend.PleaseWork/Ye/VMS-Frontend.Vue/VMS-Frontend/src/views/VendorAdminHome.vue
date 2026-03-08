@@ -186,8 +186,8 @@ onMounted(async () => {
     const vendorId = user?.vendorId;
     const [pRes, sRes, aRes, dRes] = await Promise.all([
       http.get(vendorId ? `/api/projects?vendorId=${vendorId}` : "/api/projects"),
-      http.get("/api/sprints"),
-      http.get("/api/assignments"),
+      http.get(vendorId ? `/api/sprints?vendorId=${vendorId}` : "/api/sprints"),
+      http.get(vendorId ? `/api/assignments?vendorId=${vendorId}` : "/api/assignments"),
       http.get(vendorId ? `/api/dashboard/stats?vendorId=${vendorId}` : "/api/dashboard/stats"),
     ]);
     projects.value = pRes.data;
