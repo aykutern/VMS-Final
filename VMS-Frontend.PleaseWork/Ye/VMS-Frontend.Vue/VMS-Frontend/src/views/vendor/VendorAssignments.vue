@@ -75,7 +75,7 @@ onMounted(async () => {
   try {
     const vendorId = user?.vendorId;
     const [aRes, pRes] = await Promise.all([
-      http.get("/api/assignments"),
+      http.get(vendorId ? `/api/assignments?vendorId=${vendorId}` : "/api/assignments"),
       http.get(vendorId ? `/api/projects?vendorId=${vendorId}` : "/api/projects"),
     ]);
     assignments.value = aRes.data;
@@ -85,7 +85,13 @@ onMounted(async () => {
 });
 
 async function fetchAssignments() {
-  const url = filterProject.value ? `/api/assignments?projectId=${filterProject.value}` : "/api/assignments";
+  const vendorId = user?.vendorId;
+  let url;
+  if (filterProject.value) {
+    url = `/api/assignments?projectId=${filterProject.value}`;
+  } else {
+    url = vendorId ? `/api/assignments?vendorId=${vendorId}` : "/api/assignments";
+  }
   const r = await http.get(url);
   assignments.value = r.data;
 }

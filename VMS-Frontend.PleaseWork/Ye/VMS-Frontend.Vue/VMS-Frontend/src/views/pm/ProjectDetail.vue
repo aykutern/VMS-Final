@@ -55,48 +55,35 @@
         </div>
       </div>
 
-      <!-- Tasks Tab — Drag-and-Drop Kanban -->
+      <!-- Tasks Tab — Read-Only Observer -->
       <div v-if="activeTab === 'Tasks'" class="tab-content">
         <div class="section-header">
           <h3>Assignments</h3>
-          <button class="primary-btn" @click="showTaskModal = true">+ New Task</button>
         </div>
 
-        <div class="kanban">
-          <div
-            v-for="col in columns"
-            :key="col.status"
-            class="kanban-col"
-            @dragover.prevent
-            @dragenter.prevent="dragTarget = col.status"
-            @drop="onDrop(col.status)"
-            :class="{ 'drag-over': dragTarget === col.status }"
-          >
-            <div class="col-header">
-              <span :class="['col-dot', col.color]"></span>
-              <span class="col-title">{{ col.label }}</span>
-              <span class="col-count">{{ tasksByStatus(col.status).length }}</span>
-            </div>
-            <div class="task-stack">
-              <div
-                v-for="t in tasksByStatus(col.status)"
-                :key="t.id"
-                class="task-card"
-                draggable="true"
-                @dragstart="onDragStart(t)"
-                @dragend="dragTarget = null"
-              >
-                <div class="drag-handle">⠿</div>
-                <div class="task-name">{{ t.name }}</div>
-                <div class="task-meta">
-                  <span :class="['badge', priorityColor(t.priority)]">{{ t.priority }}</span>
-                  <span class="task-date">{{ t.assignedAt }}</span>
-                </div>
-              </div>
-              <div v-if="tasksByStatus(col.status).length === 0" class="col-empty">Drop tasks here</div>
-            </div>
-          </div>
-        </div>
+        <div v-if="assignments.length === 0" class="empty-text">No tasks yet.</div>
+        <table v-else class="tasks-table">
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Assigned</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="t in assignments" :key="t.id">
+              <td class="task-name-cell">{{ t.name }}</td>
+              <td><span :class="['badge', priorityColor(t.priority)]">{{ t.priority }}</span></td>
+              <td>
+                <span :class="['status-badge', t.status === 'COMPLETED' ? 'green' : t.status === 'IN_PROGRESS' ? 'amber' : 'gray']">
+                  {{ t.status?.replace('_', ' ') }}
+                </span>
+              </td>
+              <td class="date-cell">{{ t.assignedAt || '—' }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </template>
 
@@ -137,24 +124,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Task Modal -->
-    <div v-if="showTaskModal" class="modal-backdrop" @click.self="showTaskModal = false">
-      <div class="modal">
-        <div class="modal-header"><h3>New Task</h3><button class="close-btn" @click="showTaskModal = false">✕</button></div>
-        <div class="form-group"><label>Task Name</label><input v-model="taskForm.name" placeholder="e.g. Setup CI/CD pipeline" /></div>
-        <div class="form-group">
-          <label>Priority</label>
-          <select v-model="taskForm.priority">
-            <option>HIGH</option><option>MEDIUM</option><option>LOW</option><option>OPTIONAL</option>
-          </select>
-        </div>
-        <div class="modal-actions">
-          <button class="secondary-btn" @click="showTaskModal = false">Cancel</button>
-          <button class="primary-btn" @click="createTask">Create Task</button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -176,27 +145,12 @@ const tabs = ["Announcements", "Sprints", "Tasks"];
 
 const showAnnModal = ref(false);
 const showSprintModal = ref(false);
-const showTaskModal = ref(false);
 
 const annForm = ref({ title: "", content: "" });
 const sprintForm = ref({ sprintName: "", goal: "", startDate: "", endDate: "", status: "PLANNED" });
-const taskForm = ref({ name: "", priority: "MEDIUM" });
-
-// Drag-and-drop state
-const draggingTask = ref(null);
-const dragTarget = ref(null);
-
-const columns = [
-  { status: "TODO", label: "To Do", color: "gray" },
-  { status: "IN_PROGRESS", label: "In Progress", color: "amber" },
-  { status: "COMPLETED", label: "Completed", color: "green" },
-];
 
 const hasActiveSprint = computed(() => sprints.value.some(s => s.status === "ACTIVE"));
-function tasksByStatus(status) { return assignments.value.filter(a => a.status === status); }
 function priorityColor(p) { return { HIGH: "red", MEDIUM: "amber", LOW: "blue", OPTIONAL: "gray" }[p] ?? "gray"; }
-
-function onDragStart(task) { draggingTask.value = task; }
 
 // ── Sprint auto-date helpers ──────────────────────────────────────────────
 function getWeekMonday(date) {
@@ -231,20 +185,6 @@ function openSprintModal() {
   showSprintModal.value = true;
 }
 
-async function onDrop(newStatus) {
-  dragTarget.value = null;
-  if (!draggingTask.value || draggingTask.value.status === newStatus) return;
-  const task = draggingTask.value;
-  const oldStatus = task.status;
-  task.status = newStatus; // optimistic update
-  try {
-    await http.patch(`/api/assignments/${task.id}/status`, { status: newStatus });
-  } catch (e) {
-    task.status = oldStatus; // rollback
-    console.error(e);
-  }
-  draggingTask.value = null;
-}
 
 onMounted(async () => {
   try {
@@ -276,14 +216,6 @@ async function createSprint() {
   sprints.value = r.data;
   showSprintModal.value = false;
   sprintForm.value = { sprintName: "", goal: "", startDate: "", endDate: "", status: "PLANNED" };
-}
-
-async function createTask() {
-  await http.post("/api/assignments", { name: taskForm.value.name, priority: taskForm.value.priority, projectId: Number(projectId), assignedAt: new Date().toISOString().split("T")[0] });
-  const r = await http.get(`/api/assignments?projectId=${projectId}`);
-  assignments.value = r.data;
-  showTaskModal.value = false;
-  taskForm.value = { name: "", priority: "MEDIUM" };
 }
 </script>
 
@@ -317,26 +249,14 @@ async function createTask() {
 .sprint-goal { font-size: 12px; color: rgba(200,215,255,0.6); line-height: 1.5; }
 .sprint-dates { font-size: 11px; color: rgba(200,215,255,0.4); }
 
-/* Kanban */
-.kanban { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.kanban-col { background: rgba(255,255,255,0.03); border: 2px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 16px; min-height: 300px; display: flex; flex-direction: column; gap: 10px; transition: border-color 0.15s; }
-.kanban-col.drag-over { border-color: rgba(99,102,241,0.5); background: rgba(99,102,241,0.05); }
-.col-header { display: flex; align-items: center; gap: 8px; }
-.col-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.col-dot.gray { background: #64748b; }
-.col-dot.amber { background: #f59e0b; }
-.col-dot.green { background: #22c55e; }
-.col-title { font-size: 14px; font-weight: 700; color: #e2eaff; flex: 1; }
-.col-count { font-size: 12px; background: rgba(255,255,255,0.1); border-radius: 999px; padding: 2px 8px; color: #94a3b8; }
-.task-stack { display: flex; flex-direction: column; gap: 10px; }
-.task-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; cursor: grab; user-select: none; transition: border-color 0.15s, transform 0.1s; }
-.task-card:active { cursor: grabbing; transform: rotate(1deg) scale(1.02); }
-.task-card:hover { border-color: rgba(99,102,241,0.35); }
-.drag-handle { font-size: 14px; color: rgba(200,215,255,0.25); margin-bottom: -4px; }
-.task-name { font-size: 13px; font-weight: 600; color: #e2eaff; line-height: 1.4; }
-.task-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.task-date { font-size: 11px; color: rgba(200,215,255,0.35); }
-.col-empty { font-size: 12px; color: rgba(200,215,255,0.25); text-align: center; padding: 20px; border: 2px dashed rgba(255,255,255,0.08); border-radius: 10px; }
+/* Read-only Tasks Table */
+.tasks-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tasks-table th { text-align: left; padding: 10px 14px; color: rgba(200,215,255,0.5); font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.07); white-space: nowrap; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+.tasks-table td { padding: 12px 14px; color: #d1deff; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.tasks-table tr:last-child td { border-bottom: none; }
+.tasks-table tr:hover td { background: rgba(255,255,255,0.03); }
+.task-name-cell { font-weight: 600; color: #e2eaff; }
+.date-cell { color: rgba(200,215,255,0.45); font-size: 12px; }
 
 .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
 .badge.green { background: rgba(34,197,94,0.15); color: #86efac; }
@@ -344,6 +264,11 @@ async function createTask() {
 .badge.red { background: rgba(239,68,68,0.15); color: #fca5a5; }
 .badge.blue { background: rgba(59,130,246,0.15); color: #93c5fd; }
 .badge.gray { background: rgba(148,163,184,0.12); color: #94a3b8; }
+
+.status-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 10px; font-weight: 600; }
+.status-badge.green { background: rgba(34,197,94,0.15); color: #86efac; }
+.status-badge.amber { background: rgba(251,191,36,0.15); color: #fde68a; }
+.status-badge.gray { background: rgba(148,163,184,0.12); color: #94a3b8; }
 
 .warn-text { font-size: 12px; color: #fbbf24; margin-top: 4px; display: block; }
 
