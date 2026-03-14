@@ -59,7 +59,7 @@
 
         <!-- Active Sprints -->
         <div class="section-box" v-if="activeSprints.length > 0">
-          <div class="section-title">🏃 Active Sprint{{ activeSprints.length > 1 ? 's' : '' }}</div>
+          <div class="section-title"><span class="s-icon">🏃</span> Active Sprint{{ activeSprints.length > 1 ? 's' : '' }}</div>
           <div v-for="s in activeSprints" :key="s.id" class="sprint-chip">
             <div class="sprint-name-row">
               <span class="sprint-name">{{ s.sprintName }}</span>
@@ -78,7 +78,7 @@
 
         <!-- My Projects -->
         <div class="section-box">
-          <div class="section-title">📁 My Projects</div>
+          <div class="section-title"><span class="s-icon">📁</span> My Projects</div>
           <div v-if="projects.length === 0" class="empty-note">No projects assigned yet.</div>
           <div v-for="p in projects" :key="p.id" class="project-chip">
             <div class="proj-avatar">{{ p.projectName?.[0] }}</div>
@@ -91,7 +91,7 @@
 
         <!-- Announcements -->
         <div class="section-box">
-          <div class="section-title">📢 Announcements</div>
+          <div class="section-title"><span class="s-icon">📢</span> Announcements</div>
           <div v-if="announcements.length === 0" class="empty-note">No announcements yet.</div>
           <div v-for="a in announcements" :key="a.id" class="ann-chip">
             <div class="ann-title">{{ a.title }}</div>
@@ -227,7 +227,8 @@ onMounted(async () => {
 
 .main-grid { display:flex; flex-direction:column; gap:16px; }
 .section-box { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:18px; }
-.section-title { font-size:13px; font-weight:700; color:rgba(200,215,255,0.6); margin-bottom:14px; }
+.section-title { font-size:13px; font-weight:700; color:rgba(200,215,255,0.6); margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+.s-icon { display:inline-flex; align-items:center; line-height:1; font-size:15px; }
 
 .sprint-chip { background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.2); border-radius:12px; padding:14px; margin-bottom:10px; }
 .sprint-name-row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
@@ -240,7 +241,7 @@ onMounted(async () => {
 .progress-fill { height:100%; background:linear-gradient(90deg,#6366f1,#a855f7); border-radius:999px; transition:width 0.3s; }
 .progress-label { font-size:10px; color:rgba(200,215,255,0.4); white-space:nowrap; }
 
-.project-chip { display:flex; align-items:center; gap:12px; padding:10px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:8px; }
+.project-chip { display:flex; align-items:center; gap:12px; padding:10px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:8px; min-width:0; }
 .proj-avatar { width:34px; height:34px; border-radius:10px; background:linear-gradient(135deg,#3b82f6,#6366f1); display:grid; place-items:center; font-size:14px; font-weight:800; color:#fff; flex-shrink:0; }
 .proj-name { font-size:13px; font-weight:600; color:#e2eaff; }
 .proj-vendor { font-size:11px; color:rgba(200,215,255,0.45); margin-top:2px; }

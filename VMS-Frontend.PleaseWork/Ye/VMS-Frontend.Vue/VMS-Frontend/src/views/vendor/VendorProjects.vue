@@ -1,15 +1,14 @@
 <template>
   <div class="vendor-projects">
-    <div class="page-header">
-      <h2>My Projects</h2>
-    </div>
     <div v-if="loading" class="loading-text">Loading…</div>
     <div v-else class="project-grid">
       <div v-for="p in projects" :key="p.id" class="project-card" @click="selectedProject = p">
-        <div class="project-avatar">{{ p.projectName?.[0] ?? 'P' }}</div>
-        <div class="project-info">
-          <div class="project-name">{{ p.projectName }}</div>
-          <div class="project-pm">PM: {{ p.projectManagerName ?? '—' }}</div>
+        <div class="card-top">
+          <div class="project-avatar">{{ p.projectName?.[0] ?? 'P' }}</div>
+          <div class="project-info">
+            <div class="project-name">{{ p.projectName }}</div>
+            <div class="project-pm">PM: {{ p.projectManagerName ?? '—' }}</div>
+          </div>
         </div>
         <div class="project-footer">
           <span class="badge blue">{{ p.vendorName ?? 'Vendor' }}</span>
@@ -60,8 +59,10 @@ onMounted(async () => {
 .project-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
 .project-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px; cursor:pointer; transition:border-color 0.2s,background 0.2s; display:flex; flex-direction:column; gap:12px; }
 .project-card:hover { border-color:rgba(99,102,241,0.4); background:rgba(255,255,255,0.06); }
-.project-avatar { width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg,#3b82f6,#6366f1); display:grid; place-items:center; font-size:20px; font-weight:800; color:#fff; }
-.project-name { font-size:15px; font-weight:700; color:#e2eaff; }
+.card-top { display:flex; align-items:center; gap:14px; min-width:0; }
+.project-avatar { width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg,#3b82f6,#6366f1); display:grid; place-items:center; font-size:20px; font-weight:800; color:#fff; flex-shrink:0; }
+.project-info { min-width:0; flex:1; }
+.project-name { font-size:15px; font-weight:700; color:#e2eaff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .project-pm { font-size:12px; color:rgba(200,215,255,0.5); margin-top:3px; }
 .project-footer { display:flex; }
 .badge { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; }

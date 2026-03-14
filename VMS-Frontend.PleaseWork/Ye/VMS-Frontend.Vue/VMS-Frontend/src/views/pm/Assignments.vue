@@ -1,8 +1,5 @@
 <template>
   <div class="assignments-page">
-    <div class="page-header">
-      <h2>Assignments</h2>
-    </div>
 
     <div class="filters">
       <select v-model="filterProject" @change="fetchAssignments">

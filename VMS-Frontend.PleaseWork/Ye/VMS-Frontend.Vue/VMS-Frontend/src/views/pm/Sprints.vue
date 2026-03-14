@@ -1,9 +1,5 @@
 <template>
   <div class="sprints-page">
-    <div class="page-header">
-      <h2>Sprint Management</h2>
-      <button class="primary-btn" @click="openModal">+ New Sprint</button>
-    </div>
 
     <div class="filters">
       <select v-model="filterProject" @change="filterSprints">
@@ -86,37 +82,7 @@
       </div>
     </div>
 
-    <!-- New Sprint Modal -->
-    <div v-if="showModal" class="modal-backdrop" @click.self="showModal = false">
-      <div class="modal">
-        <div class="modal-header"><h3>New Sprint</h3><button class="close-btn" @click="showModal = false">✕</button></div>
-        <div class="form-group">
-          <label>Project</label>
-          <select v-model="form.projectId" @change="refreshDates">
-            <option value="">— Select project —</option>
-            <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.projectName }}</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Sprint Name</label><input v-model="form.sprintName" placeholder="Sprint 1 — Foundation" /></div>
-        <div class="form-group"><label>Goal</label><textarea v-model="form.goal" rows="3" placeholder="What do you want to achieve?"></textarea></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div class="form-group"><label>Start Date</label><input v-model="form.startDate" type="date" /></div>
-          <div class="form-group"><label>End Date</label><input v-model="form.endDate" type="date" /></div>
-        </div>
-        <div class="form-group">
-          <label>Status</label>
-          <select v-model="form.status">
-            <option>PLANNED</option><option>ACTIVE</option>
-          </select>
-          <span v-if="form.status === 'ACTIVE' && hasActiveSprint(form.projectId)" class="warn-text">⚠ Existing active sprint will be set to PLANNED.</span>
-        </div>
-        <div class="modal-actions">
-          <button class="secondary-btn" @click="showModal = false">Cancel</button>
-          <button class="primary-btn" @click="createSprint" :disabled="saving">{{ saving ? 'Creating…' : 'Create Sprint' }}</button>
-        </div>
-        <div v-if="formError" class="form-error">{{ formError }}</div>
-      </div>
-    </div>
+
   </div>
 </template>
 
@@ -127,9 +93,6 @@ import { http } from "../../lib/http.js";
 const sprints = ref([]);
 const projects = ref([]);
 const loading = ref(true);
-const showModal = ref(false);
-const saving = ref(false);
-const formError = ref(null);
 const filterProject = ref("");
 const filterStatus = ref("");
 
@@ -138,54 +101,7 @@ const detailSprint = ref(null);
 const sprintTasks = ref([]);
 const loadingTasks = ref(false);
 
-const form = ref({ projectId: "", sprintName: "", goal: "", startDate: "", endDate: "", status: "PLANNED" });
 
-function getWeekMonday(date) {
-  const d = new Date(date);
-  const day = d.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  d.setDate(d.getDate() + diff);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-function toISO(d) { return d.toISOString().split('T')[0]; }
-
-function computeDates(projectId) {
-  const projectSprints = sprints.value.filter(s => s.projectId == projectId);
-  const active = projectSprints.find(s => s.status === 'ACTIVE');
-  let startMonday;
-  if (active?.endDate) {
-    const afterEnd = new Date(active.endDate);
-    afterEnd.setDate(afterEnd.getDate() + 1);
-    startMonday = getWeekMonday(afterEnd);
-    if (startMonday <= new Date(active.endDate)) {
-      startMonday.setDate(startMonday.getDate() + 7);
-    }
-  } else {
-    startMonday = getWeekMonday(new Date());
-  }
-  const endFriday = new Date(startMonday);
-  endFriday.setDate(endFriday.getDate() + 25);
-  return { startDate: toISO(startMonday), endDate: toISO(endFriday) };
-}
-
-function hasActiveSprint(projectId) {
-  return sprints.value.some(s => s.projectId == projectId && s.status === 'ACTIVE');
-}
-
-function refreshDates() {
-  if (form.value.projectId) {
-    const { startDate, endDate } = computeDates(form.value.projectId);
-    form.value.startDate = startDate;
-    form.value.endDate = endDate;
-  }
-}
-
-function openModal() {
-  form.value = { projectId: "", sprintName: "", goal: "", startDate: "", endDate: "", status: "PLANNED" };
-  showModal.value = true;
-}
 
 const filteredSprints = computed(() => sprints.value.filter(s => {
   if (filterProject.value && s.projectId !== filterProject.value) return false;
@@ -212,19 +128,6 @@ onMounted(async () => {
   } catch (e) { console.error(e); }
   finally { loading.value = false; }
 });
-
-async function createSprint() {
-  if (!form.value.projectId || !form.value.sprintName) { formError.value = "Project and sprint name are required."; return; }
-  saving.value = true; formError.value = null;
-  try {
-    await http.post("/api/sprints", { ...form.value, projectId: Number(form.value.projectId), status: form.value.status ?? "PLANNED" });
-    const r = await http.get("/api/sprints");
-    sprints.value = r.data;
-    showModal.value = false;
-    form.value = { projectId: "", sprintName: "", goal: "", startDate: "", endDate: "", status: "PLANNED" };
-  } catch (e) { formError.value = e?.response?.data?.message ?? "Failed to create sprint."; }
-  finally { saving.value = false; }
-}
 
 function filterSprints() {}
 </script>

@@ -1,7 +1,6 @@
 <template>
   <div class="vendor-assignments">
     <div class="page-header">
-      <h2>Assignments</h2>
       <div class="filters">
         <select v-model="filterProject" @change="fetchAssignments">
           <option value="">All Projects</option>

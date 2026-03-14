@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,4 +28,7 @@ public class CreateSprintRequest {
     private String goal;
 
     private SprintStatus status = SprintStatus.PLANNED;
+
+    /** Optional list of user IDs (PERSONNEL) to assign as sprint members */
+    private List<Integer> memberIds;
 }

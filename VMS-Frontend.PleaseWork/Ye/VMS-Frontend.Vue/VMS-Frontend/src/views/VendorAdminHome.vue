@@ -232,9 +232,9 @@ onMounted(async () => {
 .card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
 .card-header h3 { margin:0; font-size:15px; font-weight:700; color:#e2eaff; }
 .link-btn { font-size:12px; color:#93c5fd; text-decoration:none; font-weight:600; }
-.project-item { display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+.project-item { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
 .project-item:last-child { border-bottom:none; }
-.project-dot { width:8px; height:8px; border-radius:50%; background:#3b82f6; flex-shrink:0; margin-top:5px; }
+.project-dot { width:8px; height:8px; border-radius:50%; background:#3b82f6; flex-shrink:0; }
 .project-name { font-size:14px; font-weight:600; color:#e2eaff; }
 .project-pm { font-size:12px; color:rgba(200,215,255,0.5); margin-top:2px; }
 .sprint-item { padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05); }

@@ -1,8 +1,5 @@
 <template>
   <div class="performance-page">
-    <div class="page-header">
-      <h2>Employee Performance</h2>
-    </div>
 
     <div v-if="loading" class="loading-text">Loading performance data…</div>
     <div v-else>
@@ -19,9 +16,14 @@
         </thead>
         <tbody>
           <tr v-for="(e, idx) in rankedEmployees" :key="e.userId" :class="{ 'top-performer': idx === 0 && e.completedTasks > 0 }">
-            <td>
-              <span class="rank-badge" v-if="idx === 0 && e.completedTasks > 0">⭐ 1</span>
-              <span v-else class="rank-num">{{ idx + 1 }}</span>
+            <td class="rank-cell">
+              <div class="rank-wrap">
+                <span v-if="idx === 0 && e.completedTasks > 0" class="rank-crown" title="Top Performer">
+                  <svg viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm2 3a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1H7v1z"/></svg>
+                </span>
+                <span v-else class="rank-icon-placeholder"></span>
+                <span class="rank-num" :class="{ 'rank-num--gold': idx === 0 && e.completedTasks > 0 }">{{ idx + 1 }}</span>
+              </div>
             </td>
             <td>
               <div class="emp-name">
@@ -106,8 +108,13 @@ function completionRate(e) {
 /* Top performer row highlight */
 .top-performer td { background:rgba(251,191,36,0.04) !important; }
 
-.rank-badge { display:inline-flex; align-items:center; gap:4px; padding:4px 10px; background:linear-gradient(135deg,rgba(251,191,36,0.2),rgba(245,158,11,0.15)); border:1px solid rgba(251,191,36,0.3); border-radius:999px; font-size:12px; font-weight:700; color:#fde68a; }
-.rank-num { font-size:14px; font-weight:700; color:rgba(200,215,255,0.5); }
+.rank-cell { width: 60px; }
+.rank-wrap { display: flex; align-items: center; gap: 6px; }
+.rank-crown { display: inline-flex; align-items: center; width: 16px; flex-shrink: 0; }
+.rank-crown svg { width: 15px; height: 15px; fill: #fbbf24; }
+.rank-icon-placeholder { display: inline-block; width: 16px; flex-shrink: 0; }
+.rank-num { font-size: 14px; font-weight: 700; color: rgba(200,215,255,0.5); }
+.rank-num--gold { color: #fbbf24; }
 
 .emp-name { display:flex; align-items:center; gap:8px; font-weight:600; color:#e2eaff; }
 .top-badge { padding:3px 10px; background:linear-gradient(135deg,#f59e0b,#d97706); border-radius:999px; font-size:10px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.05em; }

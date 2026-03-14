@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,9 +23,25 @@ public class SprintResponse {
     private String goal;
     private SprintStatus status;
 
+    /** Assigned developers */
+    private List<MemberDto> members;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String createdBy;
     private String updatedBy;
     private int isActive;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class MemberDto {
+        private Integer id;
+        private String fullName;
+
+        public MemberDto(Integer id, String fullName) {
+            this.id = id;
+            this.fullName = fullName;
+        }
+    }
 }

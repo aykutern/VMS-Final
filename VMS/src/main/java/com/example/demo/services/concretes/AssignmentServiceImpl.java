@@ -16,6 +16,7 @@ import com.example.demo.services.abstracts.AssignmentService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -33,6 +34,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     private static final int DELETED = 0;
 
     @Override
+    @Transactional
     public AssignmentResponse create(CreateAssignmentRequest request) {
         Project project = projectRepository.findById(request.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project not found: " + request.getProjectId()));
@@ -60,6 +62,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AssignmentResponse getById(Integer id) {
         Assignment a = assignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Assignment not found: " + id));
@@ -72,6 +75,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AssignmentResponse> getAll(Integer projectId, Integer sprintId) {
         List<Assignment> list;
 
@@ -87,6 +91,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
+    @Transactional
     public AssignmentResponse updateStatus(Integer id, UpdateAssignmentStatusRequest request) {
         Assignment a = assignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Assignment not found: " + id));
@@ -135,17 +140,15 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     private boolean isAllowedTransition(AssignmentStatus from, AssignmentStatus to) {
-        return switch (from) {
-            case TODO -> to == AssignmentStatus.IN_PROGRESS;
-            case IN_PROGRESS -> to == AssignmentStatus.COMPLETED;
-            case COMPLETED -> false;
-        };
+        // Allow any direction — forward and backward
+        return from != to;
     }
 
     private AssignmentResponse toResponse(Assignment a) {
         AssignmentResponse r = new AssignmentResponse();
         r.setId(a.getId());
         r.setProjectId(a.getProject() != null ? a.getProject().getId() : null);
+        r.setProjectName(a.getProject() != null ? a.getProject().getProjectName() : null);
         r.setSprintId(a.getSprint() != null ? a.getSprint().getId() : null);
         r.setAssigneeId(a.getAssignee() != null ? a.getAssignee().getId() : null);
         r.setAssigneeName(a.getAssignee() != null

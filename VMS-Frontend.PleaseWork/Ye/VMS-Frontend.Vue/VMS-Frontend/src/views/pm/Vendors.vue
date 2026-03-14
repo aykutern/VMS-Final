@@ -1,31 +1,28 @@
 <template>
   <div class="vendors-page">
-    <!-- Tab Bar -->
+    <!-- Tab Bar + Action -->
     <div class="tab-bar">
       <button :class="['tab-btn', activeTab === 'vendors' ? 'active' : '']" @click="activeTab = 'vendors'">Vendors</button>
       <button :class="['tab-btn', activeTab === 'performance' ? 'active' : '']" @click="activeTab = 'performance'; loadPerformance()">Vendor Performance</button>
+      <div class="tab-bar-spacer"></div>
+      <button v-if="activeTab === 'vendors'" class="primary-btn" @click="showModal = true">+ Add Vendor</button>
     </div>
 
     <!-- ═══ VENDORS TAB ═══ -->
     <template v-if="activeTab === 'vendors'">
-      <div class="page-header">
-        <h2>Vendors</h2>
-        <button class="primary-btn" @click="showModal = true">+ Add Vendor</button>
-      </div>
 
       <div v-if="loading" class="loading-text">Loading vendors…</div>
       <div v-else class="vendor-grid">
-        <div
-          v-for="v in vendors"
-          :key="v.id"
-          class="vendor-card"
+        <div v-for="v in vendors" :key="v.id" class="vendor-card"
           @dblclick="openDetail(v)"
           title="Double-click to view details"
         >
-          <div class="vendor-avatar">{{ v.vendorName?.[0] ?? 'V' }}</div>
-          <div class="vendor-info">
-            <div class="vendor-name">{{ v.vendorName }}</div>
-            <div class="vendor-projects">{{ projectCount(v.id) }} project(s)</div>
+          <div class="vendor-card-top">
+            <div class="vendor-avatar">{{ v.vendorName?.[0] ?? 'V' }}</div>
+            <div class="vendor-info">
+              <div class="vendor-name">{{ v.vendorName }}</div>
+              <div class="vendor-projects">{{ projectCount(v.id) }} project(s)</div>
+            </div>
           </div>
           <div class="project-list">
             <div v-for="p in projectsByVendor(v.id)" :key="p.id" class="project-chip">
@@ -55,7 +52,7 @@
         <div class="detail-modal">
           <div class="detail-header">
             <div class="detail-avatar">{{ detailVendor.vendorName?.[0] }}</div>
-            <div>
+            <div style="flex:1; min-width:0;">
               <h3>{{ detailVendor.vendorName }}</h3>
               <p>{{ projectCount(detailVendor.id) }} project(s) assigned</p>
             </div>
@@ -98,9 +95,6 @@
 
     <!-- ═══ VENDOR PERFORMANCE TAB ═══ -->
     <template v-if="activeTab === 'performance'">
-      <div class="page-header">
-        <h2>Vendor Performance</h2>
-      </div>
 
       <div v-if="loadingPerf" class="loading-text">Loading performance data…</div>
       <div v-else>
@@ -227,7 +221,8 @@ function completionRate(v) {
 .vendors-page { display:flex; flex-direction:column; gap:24px; }
 
 /* Tab bar */
-.tab-bar { display:flex; gap:4px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:4px; width:fit-content; }
+.tab-bar { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:5px; }
+.tab-bar-spacer { flex:1; }
 .tab-btn { padding:9px 20px; border:none; border-radius:10px; background:transparent; color:rgba(200,215,255,0.5); font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; }
 .tab-btn.active { background:linear-gradient(135deg,#3b82f6,#6366f1); color:#fff; }
 .tab-btn:not(.active):hover { color:#e2eaff; background:rgba(255,255,255,0.06); }
@@ -237,19 +232,21 @@ function completionRate(v) {
 .vendor-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
 .vendor-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:14px; cursor:pointer; transition:border-color 0.2s,background 0.2s; position:relative; }
 .vendor-card:hover { border-color:rgba(168,85,247,0.4); background:rgba(168,85,247,0.04); }
-.vendor-avatar { width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg,#6366f1,#a855f7); display:grid; place-items:center; font-size:20px; font-weight:800; color:#fff; }
-.vendor-name { font-size:16px; font-weight:700; color:#e2eaff; }
+.vendor-card-top { display:flex; align-items:center; gap:14px; min-width:0; }
+.vendor-info { min-width:0; flex:1; }
+.vendor-avatar { width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg,#6366f1,#a855f7); display:grid; place-items:center; font-size:20px; font-weight:800; color:#fff; flex-shrink:0; }
+.vendor-name { font-size:16px; font-weight:700; color:#e2eaff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .vendor-projects { font-size:12px; color:rgba(200,215,255,0.5); margin-top:3px; }
 .project-list { display:flex; flex-wrap:wrap; gap:6px; }
 .project-chip { padding:4px 12px; background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.2); border-radius:999px; font-size:12px; color:#93c5fd; font-weight:500; }
 .dbl-hint { position:absolute; bottom:10px; right:12px; font-size:10px; color:rgba(200,215,255,0.25); }
 
 /* Detail modal */
-.detail-modal { background:#0f1a2e; border:1px solid rgba(255,255,255,0.12); border-radius:20px; padding:28px; width:min(640px,95vw); display:flex; flex-direction:column; gap:20px; max-height:85vh; overflow-y:auto; }
 .detail-header { display:flex; align-items:center; gap:16px; }
 .detail-avatar { width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg,#6366f1,#a855f7); display:grid; place-items:center; font-size:22px; font-weight:800; color:#fff; flex-shrink:0; }
-.detail-header h3 { margin:0; font-size:18px; font-weight:800; color:#f3f7ff; flex:1; }
+.detail-header h3 { margin:0; font-size:18px; font-weight:800; color:#f3f7ff; }
 .detail-header p { margin:4px 0 0; font-size:13px; color:rgba(200,215,255,0.5); }
+.close-btn { background:transparent; border:none; color:rgba(200,215,255,0.5); font-size:18px; cursor:pointer; margin-left:auto; flex-shrink:0; }
 .detail-section { border-top:1px solid rgba(255,255,255,0.07); padding-top:16px; }
 .detail-section-title { font-size:12px; font-weight:700; color:rgba(200,215,255,0.5); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:12px; }
 .detail-chips { display:flex; flex-wrap:wrap; gap:6px; }
