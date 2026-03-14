@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -39,4 +41,13 @@ public class Sprint extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
+
+    /** Developers assigned to this sprint */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "sprint_members",
+        joinColumns = @JoinColumn(name = "sprint_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<Users> members = new HashSet<>();
 }

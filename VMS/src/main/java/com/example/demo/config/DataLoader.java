@@ -45,7 +45,12 @@ public class DataLoader implements CommandLineRunner {
                 softSolutions.setIsActive(1);
                 softSolutions = vendorRepository.save(softSolutions);
 
-                // ── Product Managers ──────────────────────────────────────────────────
+                Vendor innovaLabs = new Vendor();
+                innovaLabs.setVendorName("InnovaLabs");
+                innovaLabs.setIsActive(1);
+                innovaLabs = vendorRepository.save(innovaLabs);
+
+                // ── Product Managers ─────────────────────────────────────────────────
                 ProductManager pm1 = new ProductManager();
                 pm1.setName("Alice Johnson");
                 pm1.setTitle(PersonnelTitle.MANAGER);
@@ -59,6 +64,7 @@ public class DataLoader implements CommandLineRunner {
                 productManagerRepository.save(pm2);
 
                 // ── Users ─────────────────────────────────────────────────────────────
+                // PM
                 Users pmUser = new Users();
                 pmUser.setUsername("pm_user");
                 pmUser.setPassword(passwordEncoder.encode("Password1"));
@@ -69,6 +75,7 @@ public class DataLoader implements CommandLineRunner {
                 pmUser.setIsActive(1);
                 pmUser = userRepository.save(pmUser);
 
+                // TechCorp admin
                 Users vendorAdmin = new Users();
                 vendorAdmin.setUsername("vendor_admin");
                 vendorAdmin.setPassword(passwordEncoder.encode("Password1"));
@@ -80,6 +87,7 @@ public class DataLoader implements CommandLineRunner {
                 vendorAdmin.setIsActive(1);
                 vendorAdmin = userRepository.save(vendorAdmin);
 
+                // TechCorp developer 1
                 Users developer = new Users();
                 developer.setUsername("tech_dev");
                 developer.setPassword(passwordEncoder.encode("Password1"));
@@ -91,6 +99,31 @@ public class DataLoader implements CommandLineRunner {
                 developer.setIsActive(1);
                 developer = userRepository.save(developer);
 
+                // TechCorp developer 2
+                Users developer3 = new Users();
+                developer3.setUsername("tech_dev2");
+                developer3.setPassword(passwordEncoder.encode("Password1"));
+                developer3.setEmail("dev2@techcorp.com");
+                developer3.setPersonnelName("James");
+                developer3.setPersonnelSurname("Kim");
+                developer3.setUserType(UserType.PERSONNEL);
+                developer3.setVendor(techCorp);
+                developer3.setIsActive(1);
+                developer3 = userRepository.save(developer3);
+
+                // SoftSolutions admin
+                Users vendorAdmin2 = new Users();
+                vendorAdmin2.setUsername("soft_admin");
+                vendorAdmin2.setPassword(passwordEncoder.encode("Password1"));
+                vendorAdmin2.setEmail("admin@softsolutions.com");
+                vendorAdmin2.setPersonnelName("Maria");
+                vendorAdmin2.setPersonnelSurname("Lopez");
+                vendorAdmin2.setUserType(UserType.VENDOR_ADMIN);
+                vendorAdmin2.setVendor(softSolutions);
+                vendorAdmin2.setIsActive(1);
+                vendorAdmin2 = userRepository.save(vendorAdmin2);
+
+                // SoftSolutions developer
                 Users developer2 = new Users();
                 developer2.setUsername("soft_dev");
                 developer2.setPassword(passwordEncoder.encode("Password1"));
@@ -102,16 +135,29 @@ public class DataLoader implements CommandLineRunner {
                 developer2.setIsActive(1);
                 developer2 = userRepository.save(developer2);
 
-                Users vendorAdmin2 = new Users();
-                vendorAdmin2.setUsername("soft_admin");
-                vendorAdmin2.setPassword(passwordEncoder.encode("Password1"));
-                vendorAdmin2.setEmail("admin@softsolutions.com");
-                vendorAdmin2.setPersonnelName("Maria");
-                vendorAdmin2.setPersonnelSurname("Lopez");
-                vendorAdmin2.setUserType(UserType.VENDOR_ADMIN);
-                vendorAdmin2.setVendor(softSolutions);
-                vendorAdmin2.setIsActive(1);
-                vendorAdmin2 = userRepository.save(vendorAdmin2);
+                // InnovaLabs admin
+                Users innovaAdmin = new Users();
+                innovaAdmin.setUsername("innova_admin");
+                innovaAdmin.setPassword(passwordEncoder.encode("Password1"));
+                innovaAdmin.setEmail("admin@innovalabs.com");
+                innovaAdmin.setPersonnelName("Sophia");
+                innovaAdmin.setPersonnelSurname("Lee");
+                innovaAdmin.setUserType(UserType.VENDOR_ADMIN);
+                innovaAdmin.setVendor(innovaLabs);
+                innovaAdmin.setIsActive(1);
+                innovaAdmin = userRepository.save(innovaAdmin);
+
+                // InnovaLabs developer
+                Users innovaDev = new Users();
+                innovaDev.setUsername("innova_dev");
+                innovaDev.setPassword(passwordEncoder.encode("Password1"));
+                innovaDev.setEmail("dev@innovalabs.com");
+                innovaDev.setPersonnelName("Noah");
+                innovaDev.setPersonnelSurname("Taylor");
+                innovaDev.setUserType(UserType.PERSONNEL);
+                innovaDev.setVendor(innovaLabs);
+                innovaDev.setIsActive(1);
+                innovaDev = userRepository.save(innovaDev);
 
                 // ── Projects ──────────────────────────────────────────────────────────
                 Project projectA = new Project();
@@ -128,32 +174,58 @@ public class DataLoader implements CommandLineRunner {
                 projectB.setIsActive(1);
                 projectB = projectRepository.save(projectB);
 
+                Project projectC = new Project();
+                projectC.setProjectName("Mobile Analytics Dashboard");
+                projectC.setVendor(innovaLabs);
+                projectC.setProjectManager(pmUser);
+                projectC.setIsActive(1);
+                projectC = projectRepository.save(projectC);
+
                 // ── Announcements ─────────────────────────────────────────────────────
                 Announcement ann1 = new Announcement();
                 ann1.setTitle("Kick-off Meeting Scheduled");
-                ann1.setContent(
-                                "The kick-off meeting for the E-Commerce Platform Redesign project is scheduled for March 10th. All team members are expected to attend. Please review the project brief before the meeting.");
+                ann1.setContent("The kick-off for E-Commerce Platform Redesign is March 10th. All team members must attend. Please review the project brief beforehand.");
                 ann1.setProject(projectA);
                 ann1.setIsActive(1);
                 announcementRepository.save(ann1);
 
                 Announcement ann2 = new Announcement();
                 ann2.setTitle("New Design Assets Available");
-                ann2.setContent(
-                                "The UI/UX design assets for the first sprint have been uploaded to the shared drive. Developers can now start referencing them for implementation.");
+                ann2.setContent("UI/UX design assets for Sprint 1 are now on the shared drive. Developers can start referencing them for implementation.");
                 ann2.setProject(projectA);
                 ann2.setIsActive(1);
                 announcementRepository.save(ann2);
 
                 Announcement ann3 = new Announcement();
-                ann3.setTitle("HR System Requirements Finalized");
-                ann3.setContent(
-                                "The business requirements document for the HR Management System has been finalized and approved by stakeholders. Development can proceed as planned.");
-                ann3.setProject(projectB);
+                ann3.setTitle("Sprint 2 Goal Updated");
+                ann3.setContent("Cart and checkout flows have been added to Sprint 2 scope. Please update your time estimates accordingly.");
+                ann3.setProject(projectA);
                 ann3.setIsActive(1);
                 announcementRepository.save(ann3);
 
+                Announcement ann4 = new Announcement();
+                ann4.setTitle("HR System Requirements Finalized");
+                ann4.setContent("The BRD for the HR Management System has been approved. Development can proceed as planned.");
+                ann4.setProject(projectB);
+                ann4.setIsActive(1);
+                announcementRepository.save(ann4);
+
+                Announcement ann5 = new Announcement();
+                ann5.setTitle("API Gateway Decision");
+                ann5.setContent("We will use Kong as the API gateway for the HR system. Configuration docs will be shared by end of week.");
+                ann5.setProject(projectB);
+                ann5.setIsActive(1);
+                announcementRepository.save(ann5);
+
+                Announcement ann6 = new Announcement();
+                ann6.setTitle("Analytics SDK Selected");
+                ann6.setContent("After evaluation, we are going with Amplitude for the Mobile Analytics Dashboard. Integration docs have been shared in Confluence.");
+                ann6.setProject(projectC);
+                ann6.setIsActive(1);
+                announcementRepository.save(ann6);
+
                 // ── Sprints ───────────────────────────────────────────────────────────
+                // Project A sprints
                 Sprint sprintA1 = new Sprint();
                 sprintA1.setSprintName("Sprint 1 — Foundation");
                 sprintA1.setStartDate(LocalDate.of(2026, 3, 1));
@@ -174,6 +246,17 @@ public class DataLoader implements CommandLineRunner {
                 sprintA2.setIsActive(1);
                 sprintA2 = sprintRepository.save(sprintA2);
 
+                Sprint sprintA3 = new Sprint();
+                sprintA3.setSprintName("Sprint 3 — Payments & Checkout");
+                sprintA3.setStartDate(LocalDate.of(2026, 3, 29));
+                sprintA3.setEndDate(LocalDate.of(2026, 4, 11));
+                sprintA3.setGoal("Integrate payment gateway, order management, and checkout flow.");
+                sprintA3.setStatus(SprintStatus.PLANNED);
+                sprintA3.setProject(projectA);
+                sprintA3.setIsActive(1);
+                sprintRepository.save(sprintA3);
+
+                // Project B sprints
                 Sprint sprintB1 = new Sprint();
                 sprintB1.setSprintName("Sprint 1 — Data Model");
                 sprintB1.setStartDate(LocalDate.of(2026, 3, 3));
@@ -194,74 +277,99 @@ public class DataLoader implements CommandLineRunner {
                 sprintB2.setIsActive(1);
                 sprintRepository.save(sprintB2);
 
-                // ── Assignments ───────────────────────────────────────────────────────
-                Assignment task1 = new Assignment();
-                task1.setName("Setup CI/CD pipeline");
-                task1.setPriority(AssignmentPriority.HIGH);
-                task1.setStatus(AssignmentStatus.COMPLETED);
-                task1.setProject(projectA);
-                task1.setSprint(sprintA1);
-                task1.setAssignee(developer);
-                task1.setAssignedAt(LocalDate.of(2026, 3, 1));
-                task1.setCompletedAt(LocalDate.of(2026, 3, 5));
-                task1.setIsActive(1);
-                assignmentRepository.save(task1);
+                // Project C sprints
+                Sprint sprintC1 = new Sprint();
+                sprintC1.setSprintName("Sprint 1 — SDK Integration");
+                sprintC1.setStartDate(LocalDate.of(2026, 3, 5));
+                sprintC1.setEndDate(LocalDate.of(2026, 3, 19));
+                sprintC1.setGoal("Integrate Amplitude SDK and set up event tracking pipeline.");
+                sprintC1.setStatus(SprintStatus.ACTIVE);
+                sprintC1.setProject(projectC);
+                sprintC1.setIsActive(1);
+                sprintC1 = sprintRepository.save(sprintC1);
 
-                Assignment task2 = new Assignment();
-                task2.setName("Implement product listing API");
-                task2.setPriority(AssignmentPriority.HIGH);
-                task2.setStatus(AssignmentStatus.IN_PROGRESS);
-                task2.setProject(projectA);
-                task2.setSprint(sprintA2);
-                task2.setAssignee(developer);
-                task2.setAssignedAt(LocalDate.of(2026, 3, 6));
-                task2.setIsActive(1);
-                assignmentRepository.save(task2);
+                Sprint sprintC2 = new Sprint();
+                sprintC2.setSprintName("Sprint 2 — Dashboard UI");
+                sprintC2.setStartDate(LocalDate.of(2026, 3, 20));
+                sprintC2.setEndDate(LocalDate.of(2026, 4, 3));
+                sprintC2.setGoal("Build the interactive analytics dashboard with charts and filters.");
+                sprintC2.setStatus(SprintStatus.PLANNED);
+                sprintC2.setProject(projectC);
+                sprintC2.setIsActive(1);
+                sprintRepository.save(sprintC2);
 
-                Assignment task3 = new Assignment();
-                task3.setName("Design homepage wireframes");
-                task3.setPriority(AssignmentPriority.MEDIUM);
-                task3.setStatus(AssignmentStatus.TODO);
-                task3.setProject(projectA);
-                task3.setSprint(sprintA2);
-                task3.setAssignee(developer);
-                task3.setAssignedAt(LocalDate.of(2026, 3, 8));
-                task3.setIsActive(1);
-                assignmentRepository.save(task3);
+                // ── Assignments — Project A (TechCorp) ───────────────────────────────
+                save(assignmentRepository, "Setup CI/CD pipeline", AssignmentPriority.HIGH, AssignmentStatus.COMPLETED,
+                                projectA, sprintA1, developer, LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 5));
+                save(assignmentRepository, "Configure Vite + Vue 3 project", AssignmentPriority.MEDIUM,
+                                AssignmentStatus.COMPLETED, projectA, sprintA1, developer3, LocalDate.of(2026, 3, 2),
+                                LocalDate.of(2026, 3, 6));
+                save(assignmentRepository, "Design token system (colors/fonts)", AssignmentPriority.MEDIUM,
+                                AssignmentStatus.COMPLETED, projectA, sprintA1, developer, LocalDate.of(2026, 3, 3),
+                                LocalDate.of(2026, 3, 8));
+                save(assignmentRepository, "Setup Spring Boot skeleton API", AssignmentPriority.HIGH,
+                                AssignmentStatus.COMPLETED, projectA, sprintA1, developer3, LocalDate.of(2026, 3, 4),
+                                LocalDate.of(2026, 3, 10));
 
-                Assignment task4 = new Assignment();
-                task4.setName("Define Employee entity and DB schema");
-                task4.setPriority(AssignmentPriority.HIGH);
-                task4.setStatus(AssignmentStatus.IN_PROGRESS);
-                task4.setProject(projectB);
-                task4.setSprint(sprintB1);
-                task4.setAssignee(developer2);
-                task4.setAssignedAt(LocalDate.of(2026, 3, 3));
-                task4.setIsActive(1);
-                assignmentRepository.save(task4);
+                save(assignmentRepository, "Implement product listing API", AssignmentPriority.HIGH,
+                                AssignmentStatus.IN_PROGRESS, projectA, sprintA2, developer, LocalDate.of(2026, 3, 15),
+                                null);
+                save(assignmentRepository, "Build product detail page", AssignmentPriority.HIGH,
+                                AssignmentStatus.IN_PROGRESS, projectA, sprintA2, developer3, LocalDate.of(2026, 3, 15),
+                                null);
+                save(assignmentRepository, "Implement cart & quantity controls", AssignmentPriority.HIGH,
+                                AssignmentStatus.TODO, projectA, sprintA2, developer, LocalDate.of(2026, 3, 16), null);
+                save(assignmentRepository, "Design homepage wireframes", AssignmentPriority.MEDIUM,
+                                AssignmentStatus.TODO, projectA, sprintA2, developer3, LocalDate.of(2026, 3, 16), null);
+                save(assignmentRepository, "User authentication — JWT flow", AssignmentPriority.HIGH,
+                                AssignmentStatus.TODO, projectA, sprintA2, developer, LocalDate.of(2026, 3, 17), null);
+                save(assignmentRepository, "Write integration tests — product API", AssignmentPriority.LOW,
+                                AssignmentStatus.TODO, projectA, sprintA2, developer3, LocalDate.of(2026, 3, 18), null);
 
-                Assignment task5 = new Assignment();
-                task5.setName("Build leave request REST endpoint");
-                task5.setPriority(AssignmentPriority.MEDIUM);
-                task5.setStatus(AssignmentStatus.TODO);
-                task5.setProject(projectB);
-                task5.setSprint(sprintB1);
-                task5.setAssignee(developer2);
-                task5.setAssignedAt(LocalDate.of(2026, 3, 10));
-                task5.setIsActive(1);
-                assignmentRepository.save(task5);
+                // ── Assignments — Project B (SoftSolutions) ──────────────────────────
+                save(assignmentRepository, "Define Employee entity & DB schema", AssignmentPriority.HIGH,
+                                AssignmentStatus.IN_PROGRESS, projectB, sprintB1, developer2, LocalDate.of(2026, 3, 3),
+                                null);
+                save(assignmentRepository, "Build department management API", AssignmentPriority.HIGH,
+                                AssignmentStatus.IN_PROGRESS, projectB, sprintB1, developer2, LocalDate.of(2026, 3, 5),
+                                null);
+                save(assignmentRepository, "Create employee list screen", AssignmentPriority.MEDIUM,
+                                AssignmentStatus.TODO, projectB, sprintB1, developer2, LocalDate.of(2026, 3, 8), null);
+                save(assignmentRepository, "Build leave request REST endpoint", AssignmentPriority.MEDIUM,
+                                AssignmentStatus.TODO, projectB, sprintB1, developer2, LocalDate.of(2026, 3, 10), null);
+                save(assignmentRepository, "Write unit tests for payroll module", AssignmentPriority.LOW,
+                                AssignmentStatus.TODO, projectB, sprintB1, developer2, LocalDate.of(2026, 3, 12), null);
 
-                Assignment task6 = new Assignment();
-                task6.setName("Write unit tests for payroll module");
-                task6.setPriority(AssignmentPriority.LOW);
-                task6.setStatus(AssignmentStatus.TODO);
-                task6.setProject(projectB);
-                task6.setSprint(sprintB1);
-                task6.setAssignee(developer2);
-                task6.setAssignedAt(LocalDate.of(2026, 3, 12));
-                task6.setIsActive(1);
-                assignmentRepository.save(task6);
+                // ── Assignments — Project C (InnovaLabs) ─────────────────────────────
+                save(assignmentRepository, "Integrate Amplitude event SDK", AssignmentPriority.HIGH,
+                                AssignmentStatus.IN_PROGRESS, projectC, sprintC1, innovaDev, LocalDate.of(2026, 3, 5),
+                                null);
+                save(assignmentRepository, "Define event taxonomy & naming", AssignmentPriority.MEDIUM,
+                                AssignmentStatus.IN_PROGRESS, projectC, sprintC1, innovaDev, LocalDate.of(2026, 3, 6),
+                                null);
+                save(assignmentRepository, "Setup data pipeline to warehouse", AssignmentPriority.HIGH,
+                                AssignmentStatus.TODO, projectC, sprintC1, innovaDev, LocalDate.of(2026, 3, 8), null);
+                save(assignmentRepository, "Write tracking test coverage", AssignmentPriority.LOW,
+                                AssignmentStatus.TODO, projectC, sprintC1, innovaDev, LocalDate.of(2026, 3, 10), null);
 
                 System.out.println("✅  VMS seed data loaded successfully.");
+        }
+
+        private void save(
+                        AssignmentRepository repo,
+                        String name, AssignmentPriority priority, AssignmentStatus status,
+                        Project project, Sprint sprint, Users assignee,
+                        LocalDate assignedAt, LocalDate completedAt) {
+                Assignment a = new Assignment();
+                a.setName(name);
+                a.setPriority(priority);
+                a.setStatus(status);
+                a.setProject(project);
+                a.setSprint(sprint);
+                a.setAssignee(assignee);
+                a.setAssignedAt(assignedAt);
+                a.setCompletedAt(completedAt);
+                a.setIsActive(1);
+                repo.save(a);
         }
 }

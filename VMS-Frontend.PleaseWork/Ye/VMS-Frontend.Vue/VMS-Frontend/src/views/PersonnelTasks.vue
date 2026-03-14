@@ -1,7 +1,6 @@
 <template>
   <div class="my-tasks-page">
     <div class="page-header">
-      <h2>My Tasks</h2>
       <div class="task-pills">
         <span class="pill gray">{{ tasksByStatus('TODO').length }} To Do</span>
         <span class="pill amber">{{ tasksByStatus('IN_PROGRESS').length }} In Progress</span>

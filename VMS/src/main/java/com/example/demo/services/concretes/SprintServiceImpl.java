@@ -5,15 +5,21 @@ import com.example.demo.dto.request.UpdateSprintRequest;
 import com.example.demo.dto.response.SprintResponse;
 import com.example.demo.entities.concretes.Project;
 import com.example.demo.entities.concretes.Sprint;
+import com.example.demo.entities.concretes.Users;
 import com.example.demo.enums.SprintStatus;
 import com.example.demo.repositories.ProjectRepository;
 import com.example.demo.repositories.SprintRepository;
+import com.example.demo.repositories.UserRepository;
 import com.example.demo.services.abstracts.SprintService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,18 +27,16 @@ public class SprintServiceImpl implements SprintService {
 
     private final SprintRepository sprintRepository;
     private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
     private static final int ACTIVE = 1;
     private static final int DELETED = 0;
 
     @Override
+    @Transactional
     public SprintResponse create(CreateSprintRequest request) {
         Project project = projectRepository.findById(request.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project not found: " + request.getProjectId()));
-
-        if (request.getStatus() == SprintStatus.ACTIVE) {
-            enforceOneActiveSprint(request.getProjectId(), null);
-        }
 
         Sprint sprint = new Sprint();
         sprint.setProject(project);
@@ -43,10 +47,17 @@ public class SprintServiceImpl implements SprintService {
         sprint.setStatus(request.getStatus());
         sprint.setIsActive(ACTIVE);
 
+        // Assign members (validate each isn't already in an active sprint)
+        if (request.getMemberIds() != null && !request.getMemberIds().isEmpty()) {
+            Set<Users> members = resolveAndValidateMembers(request.getMemberIds(), request.getStatus(), -1);
+            sprint.setMembers(members);
+        }
+
         return toResponse(sprintRepository.save(sprint));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SprintResponse getById(Integer id) {
         Sprint sprint = sprintRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Sprint not found: " + id));
@@ -59,6 +70,7 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SprintResponse> getAll(Integer projectId) {
         List<Sprint> sprints;
 
@@ -74,6 +86,7 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
+    @Transactional
     public SprintResponse update(Integer id, UpdateSprintRequest request) {
         Sprint sprint = sprintRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Sprint not found: " + id));
@@ -84,10 +97,6 @@ public class SprintServiceImpl implements SprintService {
 
         Project project = projectRepository.findById(request.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project not found: " + request.getProjectId()));
-
-        if (request.getStatus() == SprintStatus.ACTIVE) {
-            enforceOneActiveSprint(request.getProjectId(), id);
-        }
 
         sprint.setProject(project);
         sprint.setSprintName(request.getSprintName());
@@ -100,6 +109,7 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         Sprint sprint = sprintRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Sprint not found: " + id));
@@ -111,17 +121,28 @@ public class SprintServiceImpl implements SprintService {
     }
 
     /**
-     * Demotes any existing ACTIVE sprint in the project to PLANNED (excludes
-     * currentSprintId).
+     * Resolves user IDs to Users and validates that none are already
+     * in a different ACTIVE sprint (enforces 1 active sprint per developer).
      */
-    private void enforceOneActiveSprint(Integer projectId, Integer excludeSprintId) {
-        sprintRepository.findByProject_IdAndStatusAndIsActive(projectId, SprintStatus.ACTIVE, ACTIVE)
-                .ifPresent(existing -> {
-                    if (!existing.getId().equals(excludeSprintId)) {
-                        existing.setStatus(SprintStatus.PLANNED);
-                        sprintRepository.save(existing);
-                    }
-                });
+    private Set<Users> resolveAndValidateMembers(List<Integer> memberIds, SprintStatus newStatus, Integer currentSprintId) {
+        Set<Users> members = new HashSet<>();
+        for (Integer uid : memberIds) {
+            Users user = userRepository.findById(uid)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found: " + uid));
+
+            // Only enforce when the sprint being created/updated is ACTIVE
+            if (newStatus == SprintStatus.ACTIVE) {
+                boolean conflict = sprintRepository.existsByMembers_IdAndStatusAndIsActiveAndIdNot(
+                        uid, SprintStatus.ACTIVE, ACTIVE, currentSprintId == -1 ? Integer.MAX_VALUE : currentSprintId);
+                if (conflict) {
+                    throw new IllegalArgumentException(
+                        user.getPersonnelName() + " " + user.getPersonnelSurname()
+                        + " is already assigned to another active sprint.");
+                }
+            }
+            members.add(user);
+        }
+        return members;
     }
 
     private SprintResponse toResponse(Sprint sprint) {
@@ -136,6 +157,17 @@ public class SprintServiceImpl implements SprintService {
         response.setEndDate(sprint.getEndDate());
         response.setGoal(sprint.getGoal());
         response.setStatus(sprint.getStatus());
+
+        // Map members
+        if (sprint.getMembers() != null) {
+            response.setMembers(sprint.getMembers().stream()
+                .map(u -> new SprintResponse.MemberDto(
+                    u.getId(),
+                    u.getPersonnelName() + " " + u.getPersonnelSurname()
+                ))
+                .collect(Collectors.toList()));
+        }
+
         response.setCreatedAt(sprint.getCreatedAt());
         response.setUpdatedAt(sprint.getUpdatedAt());
         response.setCreatedBy(sprint.getCreatedBy());

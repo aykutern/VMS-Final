@@ -1,7 +1,6 @@
 <template>
   <div class="personnel-page">
     <div class="page-header">
-      <h2>Team Personnel</h2>
       <span class="vendor-label">{{ vendorName }}</span>
     </div>
 
@@ -178,7 +177,7 @@ onMounted(async () => {
 
 .team-grid { display:flex; flex-direction:column; gap:16px; }
 .member-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px; display:flex; flex-direction:column; gap:16px; }
-.member-header { display:flex; align-items:flex-start; gap:14px; }
+.member-header { display:flex; align-items:center; gap:14px; }
 .member-avatar { width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg,#6366f1,#a855f7); display:grid; place-items:center; font-size:18px; font-weight:800; color:#fff; flex-shrink:0; }
 .member-info { flex:1; }
 .member-name { font-size:15px; font-weight:700; color:#e2eaff; }
@@ -205,7 +204,7 @@ onMounted(async () => {
 .mini-task { display:flex; align-items:flex-start; gap:6px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:8px; margin-bottom:6px; cursor:grab; user-select:none; transition:border-color 0.15s; }
 .mini-task:hover { border-color:rgba(99,102,241,0.35); }
 .mini-task:active { cursor:grabbing; }
-.priority-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:3px; }
+.priority-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
 .priority-dot.red { background:#ef4444; }
 .priority-dot.amber { background:#f59e0b; }
 .priority-dot.blue { background:#3b82f6; }

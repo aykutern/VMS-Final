@@ -19,17 +19,26 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 
 const titleMap = {
-  "pm-dashboard": "Dashboard",
-  "pm-projects": "Projects",
-  "pm-project-detail": "Project Detail",
-  "pm-sprints": "Sprints",
-  "pm-assignments": "Assignments",
-  "pm-vendors": "Vendors",
-  "vendor-dashboard": "Dashboard",
-  "vendor-projects": "My Projects",
-  "vendor-sprints": "Sprints",
-  "vendor-assignments": "My Tasks",
-  "personnel-dashboard": "My Tasks",
+  // PM
+  "pm-dashboard":        "Dashboard",
+  "pm-projects":         "Projects",
+  "pm-project-detail":   "Project Detail",
+  "pm-sprints":          "Sprints",
+  "pm-assignments":      "Assignments",
+  "pm-vendors":          "Vendors",
+  "pm-announcements":    "Announcements",
+  // Vendor Admin
+  "vendor-dashboard":    "Dashboard",
+  "vendor-projects":     "My Projects",
+  "vendor-sprints":      "Sprints",
+  "vendor-assignments":  "Assignments",
+  "vendor-personnel":    "Team Personnel",
+  "vendor-performance":  "Employee Performance",
+  "vendor-announcements":"Announcements",
+  // Personnel
+  "personnel-dashboard": "Dashboard",
+  "personnel-tasks":     "My Tasks",
+  "personnel-announcements": "Announcements",
 };
 
 const pageTitle = computed(() => titleMap[route.name] ?? "VMS");

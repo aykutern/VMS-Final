@@ -16,6 +16,7 @@ public class AssignmentResponse {
 
     private Integer id;
     private Integer projectId;
+    private String projectName;
     private Integer sprintId;
     private Integer assigneeId;
     private String assigneeName;

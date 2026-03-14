@@ -23,6 +23,9 @@ import VendorPerformance from "../views/vendor/VendorPerformance.vue";
 import PersonnelHome from "../views/PersonnelHome.vue";
 import PersonnelTasks from "../views/PersonnelTasks.vue";
 
+// Shared Views
+import Announcements from "../views/Announcements.vue";
+
 const routes = [
   // Public
   { path: "/login", name: "login", component: Login },
@@ -40,6 +43,7 @@ const routes = [
       { path: "sprints", name: "pm-sprints", component: PMSprints },
       { path: "assignments", name: "pm-assignments", component: PMAssignments },
       { path: "vendors", name: "pm-vendors", component: PMVendors },
+      { path: "announcements", name: "pm-announcements", component: Announcements },
     ],
   },
 
@@ -56,6 +60,7 @@ const routes = [
       { path: "assignments", name: "vendor-assignments", component: VendorAssignments },
       { path: "personnel", name: "vendor-personnel", component: VendorPersonnel },
       { path: "performance", name: "vendor-performance", component: VendorPerformance },
+      { path: "announcements", name: "vendor-announcements", component: Announcements },
     ],
   },
 
@@ -68,6 +73,7 @@ const routes = [
     children: [
       { path: "dashboard", name: "personnel-dashboard", component: PersonnelHome },
       { path: "tasks", name: "personnel-tasks", component: PersonnelTasks },
+      { path: "announcements", name: "personnel-announcements", component: Announcements },
     ],
   },
 

@@ -2,7 +2,6 @@
   <div class="projects-page">
     <!-- Header -->
     <div class="page-header">
-      <h2>Projects</h2>
       <button class="primary-btn" @click="showModal = true">+ New Project</button>
     </div>
 
@@ -132,7 +131,7 @@ async function createProject() {
 }
 .project-card:hover { border-color: rgba(99,102,241,0.4); background: rgba(255,255,255,0.06); }
 
-.project-card-header { display: flex; align-items: center; gap: 12px; }
+.project-card-header { display: flex; align-items: center; gap: 14px; min-width: 0; }
 
 .project-avatar {
   width: 44px; height: 44px;
@@ -146,8 +145,9 @@ async function createProject() {
   flex-shrink: 0;
 }
 
-.project-name { font-size: 15px; font-weight: 700; color: #e2eaff; }
-.project-vendor { font-size: 12px; color: rgba(200,215,255,0.55); margin-top: 3px; }
+.project-info { min-width: 0; flex: 1; }
+.project-name { font-size: 15px; font-weight: 700; color: #e2eaff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.project-vendor { font-size: 12px; color: rgba(200,215,255,0.55); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .project-footer { display: flex; align-items: center; justify-content: space-between; }
 .pm-name { font-size: 12px; color: rgba(200,215,255,0.4); }
