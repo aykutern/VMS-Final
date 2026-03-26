@@ -233,6 +233,7 @@ public class DataLoader implements CommandLineRunner {
                 sprintA1.setGoal("Set up project infrastructure, design system, and core API scaffolding.");
                 sprintA1.setStatus(SprintStatus.COMPLETED);
                 sprintA1.setProject(projectA);
+                sprintA1.setMaxCapacity(10);
                 sprintA1.setIsActive(1);
                 sprintA1 = sprintRepository.save(sprintA1);
 
@@ -243,6 +244,7 @@ public class DataLoader implements CommandLineRunner {
                 sprintA2.setGoal("Implement product catalog, cart system, and user authentication.");
                 sprintA2.setStatus(SprintStatus.ACTIVE);
                 sprintA2.setProject(projectA);
+                sprintA2.setMaxCapacity(10);
                 sprintA2.setIsActive(1);
                 sprintA2 = sprintRepository.save(sprintA2);
 
@@ -253,6 +255,7 @@ public class DataLoader implements CommandLineRunner {
                 sprintA3.setGoal("Integrate payment gateway, order management, and checkout flow.");
                 sprintA3.setStatus(SprintStatus.PLANNED);
                 sprintA3.setProject(projectA);
+                sprintA3.setMaxCapacity(10);
                 sprintA3.setIsActive(1);
                 sprintRepository.save(sprintA3);
 
@@ -264,6 +267,7 @@ public class DataLoader implements CommandLineRunner {
                 sprintB1.setGoal("Design and implement the employee and department data models.");
                 sprintB1.setStatus(SprintStatus.ACTIVE);
                 sprintB1.setProject(projectB);
+                sprintB1.setMaxCapacity(10);
                 sprintB1.setIsActive(1);
                 sprintB1 = sprintRepository.save(sprintB1);
 
@@ -274,6 +278,7 @@ public class DataLoader implements CommandLineRunner {
                 sprintB2.setGoal("Build payroll reports and leave management features.");
                 sprintB2.setStatus(SprintStatus.PLANNED);
                 sprintB2.setProject(projectB);
+                sprintB2.setMaxCapacity(10);
                 sprintB2.setIsActive(1);
                 sprintRepository.save(sprintB2);
 
@@ -285,6 +290,7 @@ public class DataLoader implements CommandLineRunner {
                 sprintC1.setGoal("Integrate Amplitude SDK and set up event tracking pipeline.");
                 sprintC1.setStatus(SprintStatus.ACTIVE);
                 sprintC1.setProject(projectC);
+                sprintC1.setMaxCapacity(10);
                 sprintC1.setIsActive(1);
                 sprintC1 = sprintRepository.save(sprintC1);
 
@@ -295,62 +301,63 @@ public class DataLoader implements CommandLineRunner {
                 sprintC2.setGoal("Build the interactive analytics dashboard with charts and filters.");
                 sprintC2.setStatus(SprintStatus.PLANNED);
                 sprintC2.setProject(projectC);
+                sprintC2.setMaxCapacity(10);
                 sprintC2.setIsActive(1);
                 sprintRepository.save(sprintC2);
 
                 // ── Assignments — Project A (TechCorp) ───────────────────────────────
                 save(assignmentRepository, "Setup CI/CD pipeline", AssignmentPriority.HIGH, AssignmentStatus.COMPLETED,
-                                projectA, sprintA1, developer, LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 5));
+                                projectA, sprintA1, developer, LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 5), 2);
                 save(assignmentRepository, "Configure Vite + Vue 3 project", AssignmentPriority.MEDIUM,
                                 AssignmentStatus.COMPLETED, projectA, sprintA1, developer3, LocalDate.of(2026, 3, 2),
-                                LocalDate.of(2026, 3, 6));
+                                LocalDate.of(2026, 3, 6), 1);
                 save(assignmentRepository, "Design token system (colors/fonts)", AssignmentPriority.MEDIUM,
                                 AssignmentStatus.COMPLETED, projectA, sprintA1, developer, LocalDate.of(2026, 3, 3),
-                                LocalDate.of(2026, 3, 8));
+                                LocalDate.of(2026, 3, 8), 2);
                 save(assignmentRepository, "Setup Spring Boot skeleton API", AssignmentPriority.HIGH,
                                 AssignmentStatus.COMPLETED, projectA, sprintA1, developer3, LocalDate.of(2026, 3, 4),
-                                LocalDate.of(2026, 3, 10));
+                                LocalDate.of(2026, 3, 10), 3);
 
                 save(assignmentRepository, "Implement product listing API", AssignmentPriority.HIGH,
                                 AssignmentStatus.IN_PROGRESS, projectA, sprintA2, developer, LocalDate.of(2026, 3, 15),
-                                null);
+                                null, 3);
                 save(assignmentRepository, "Build product detail page", AssignmentPriority.HIGH,
                                 AssignmentStatus.IN_PROGRESS, projectA, sprintA2, developer3, LocalDate.of(2026, 3, 15),
-                                null);
+                                null, 2);
                 save(assignmentRepository, "Implement cart & quantity controls", AssignmentPriority.HIGH,
-                                AssignmentStatus.TODO, projectA, sprintA2, developer, LocalDate.of(2026, 3, 16), null);
+                                AssignmentStatus.TODO, projectA, sprintA2, developer, LocalDate.of(2026, 3, 16), null, 2);
                 save(assignmentRepository, "Design homepage wireframes", AssignmentPriority.MEDIUM,
-                                AssignmentStatus.TODO, projectA, sprintA2, developer3, LocalDate.of(2026, 3, 16), null);
+                                AssignmentStatus.TODO, projectA, sprintA2, developer3, LocalDate.of(2026, 3, 16), null, 1);
                 save(assignmentRepository, "User authentication — JWT flow", AssignmentPriority.HIGH,
-                                AssignmentStatus.TODO, projectA, sprintA2, developer, LocalDate.of(2026, 3, 17), null);
+                                AssignmentStatus.TODO, projectA, sprintA2, developer, LocalDate.of(2026, 3, 17), null, 1);
                 save(assignmentRepository, "Write integration tests — product API", AssignmentPriority.LOW,
-                                AssignmentStatus.TODO, projectA, sprintA2, developer3, LocalDate.of(2026, 3, 18), null);
+                                AssignmentStatus.TODO, projectA, sprintA2, developer3, LocalDate.of(2026, 3, 18), null, 1);
 
                 // ── Assignments — Project B (SoftSolutions) ──────────────────────────
                 save(assignmentRepository, "Define Employee entity & DB schema", AssignmentPriority.HIGH,
                                 AssignmentStatus.IN_PROGRESS, projectB, sprintB1, developer2, LocalDate.of(2026, 3, 3),
-                                null);
+                                null, 3);
                 save(assignmentRepository, "Build department management API", AssignmentPriority.HIGH,
                                 AssignmentStatus.IN_PROGRESS, projectB, sprintB1, developer2, LocalDate.of(2026, 3, 5),
-                                null);
+                                null, 2);
                 save(assignmentRepository, "Create employee list screen", AssignmentPriority.MEDIUM,
-                                AssignmentStatus.TODO, projectB, sprintB1, developer2, LocalDate.of(2026, 3, 8), null);
+                                AssignmentStatus.TODO, projectB, sprintB1, developer2, LocalDate.of(2026, 3, 8), null, 2);
                 save(assignmentRepository, "Build leave request REST endpoint", AssignmentPriority.MEDIUM,
-                                AssignmentStatus.TODO, projectB, sprintB1, developer2, LocalDate.of(2026, 3, 10), null);
+                                AssignmentStatus.TODO, projectB, sprintB1, developer2, LocalDate.of(2026, 3, 10), null, 2);
                 save(assignmentRepository, "Write unit tests for payroll module", AssignmentPriority.LOW,
-                                AssignmentStatus.TODO, projectB, sprintB1, developer2, LocalDate.of(2026, 3, 12), null);
+                                AssignmentStatus.TODO, projectB, sprintB1, developer2, LocalDate.of(2026, 3, 12), null, 1);
 
                 // ── Assignments — Project C (InnovaLabs) ─────────────────────────────
                 save(assignmentRepository, "Integrate Amplitude event SDK", AssignmentPriority.HIGH,
                                 AssignmentStatus.IN_PROGRESS, projectC, sprintC1, innovaDev, LocalDate.of(2026, 3, 5),
-                                null);
+                                null, 3);
                 save(assignmentRepository, "Define event taxonomy & naming", AssignmentPriority.MEDIUM,
                                 AssignmentStatus.IN_PROGRESS, projectC, sprintC1, innovaDev, LocalDate.of(2026, 3, 6),
-                                null);
+                                null, 2);
                 save(assignmentRepository, "Setup data pipeline to warehouse", AssignmentPriority.HIGH,
-                                AssignmentStatus.TODO, projectC, sprintC1, innovaDev, LocalDate.of(2026, 3, 8), null);
+                                AssignmentStatus.TODO, projectC, sprintC1, innovaDev, LocalDate.of(2026, 3, 8), null, 4);
                 save(assignmentRepository, "Write tracking test coverage", AssignmentPriority.LOW,
-                                AssignmentStatus.TODO, projectC, sprintC1, innovaDev, LocalDate.of(2026, 3, 10), null);
+                                AssignmentStatus.TODO, projectC, sprintC1, innovaDev, LocalDate.of(2026, 3, 10), null, 1);
 
                 System.out.println("✅  VMS seed data loaded successfully.");
         }
@@ -359,7 +366,7 @@ public class DataLoader implements CommandLineRunner {
                         AssignmentRepository repo,
                         String name, AssignmentPriority priority, AssignmentStatus status,
                         Project project, Sprint sprint, Users assignee,
-                        LocalDate assignedAt, LocalDate completedAt) {
+                        LocalDate assignedAt, LocalDate completedAt, int rank) {
                 Assignment a = new Assignment();
                 a.setName(name);
                 a.setPriority(priority);
@@ -369,6 +376,7 @@ public class DataLoader implements CommandLineRunner {
                 a.setAssignee(assignee);
                 a.setAssignedAt(assignedAt);
                 a.setCompletedAt(completedAt);
+                a.setRank(rank);
                 a.setIsActive(1);
                 repo.save(a);
         }

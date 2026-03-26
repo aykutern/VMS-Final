@@ -11,15 +11,15 @@
             <div class="logo">VMS</div>
             <div class="title">Vendor Management System</div>
             <div class="subtitle">
-              Coordinate vendors like a control tower: track, approve, and deliver with clarity.
+              Centralize your vendor operations: manage onboarding, track performance, and accelerate delivery.
             </div>
           </div>
   
           <ul class="bullets">
-            <li>Vendor onboarding & profiles</li>
-            <li>Contracts, SLAs, and approvals</li>
-            <li>Project tasks & status tracking</li>
-            <li>Role-based access & audit trails</li>
+            <li>Seamless vendor onboarding & profiling</li>
+            <li>Automated contract & SLA management</li>
+            <li>Real-time project & task tracking</li>
+            <li>Secure role-based access & detailed audit trails</li>
           </ul>
         </div>
   

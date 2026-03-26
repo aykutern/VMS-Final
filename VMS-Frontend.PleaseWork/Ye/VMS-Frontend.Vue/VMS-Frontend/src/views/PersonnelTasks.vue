@@ -4,6 +4,7 @@
       <div class="task-pills">
         <span class="pill gray">{{ tasksByStatus('TODO').length }} To Do</span>
         <span class="pill amber">{{ tasksByStatus('IN_PROGRESS').length }} In Progress</span>
+        <span class="pill purple">{{ tasksByStatus('IN_REVIEW').length }} In Review</span>
         <span class="pill green">{{ tasksByStatus('COMPLETED').length }} Done</span>
       </div>
     </div>
@@ -37,7 +38,11 @@
             <div class="task-name">{{ t.name }}</div>
             <div class="task-meta">
               <span :class="['badge', priorityColor(t.priority)]">{{ t.priority }}</span>
+              <span :class="['rank-badge', 'rank-' + t.rank]">★ {{ t.rank }}</span>
               <span class="task-project">{{ t.projectName }}</span>
+            </div>
+            <div v-if="t.rejectionReason && (col.status === 'TODO' || col.status === 'IN_PROGRESS')" class="task-rejection">
+              🛑 <strong>Rejected:</strong> {{ t.rejectionReason }}
             </div>
             <div v-if="t.assignedAt" class="task-date">{{ t.assignedAt }}</div>
           </div>
@@ -62,6 +67,7 @@ const dragTarget = ref(null);
 const columns = [
   { status: "TODO", label: "To Do", color: "gray" },
   { status: "IN_PROGRESS", label: "In Progress", color: "amber" },
+  { status: "IN_REVIEW", label: "In Review", color: "purple" },
   { status: "COMPLETED", label: "Completed", color: "green" },
 ];
 
@@ -71,6 +77,11 @@ function priorityColor(p) { return { HIGH: "red", MEDIUM: "amber", LOW: "blue", 
 async function onDrop(newStatus) {
   dragTarget.value = null;
   if (!draggingTask.value || draggingTask.value.status === newStatus) return;
+  if (newStatus === "COMPLETED") {
+    alert("Only administrators can mark tasks as Completed. Please drag to 'In Review' instead.");
+    draggingTask.value = null;
+    return;
+  }
   const task = draggingTask.value;
   const old = task.status;
   task.status = newStatus;
@@ -82,11 +93,11 @@ async function onDrop(newStatus) {
 
 onMounted(async () => {
   try {
-    const vendorId = user?.vendorId;
-    const pRes = await http.get(vendorId ? `/api/projects?vendorId=${vendorId}` : "/api/projects");
-    const projectIds = pRes.data.map(p => p.id);
-    const aRes = await http.get("/api/assignments");
-    assignments.value = aRes.data.filter(a => projectIds.includes(a.projectId));
+    const userId = user?.id;
+    if (userId) {
+      const aRes = await http.get(`/api/assignments?assigneeId=${userId}`);
+      assignments.value = aRes.data;
+    }
   } catch (e) { console.error(e); }
   finally { loading.value = false; }
 });
@@ -109,6 +120,7 @@ onMounted(async () => {
 .col-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 .col-dot.gray { background:#64748b; }
 .col-dot.amber { background:#f59e0b; }
+.col-dot.purple { background:#a855f7; }
 .col-dot.green { background:#22c55e; }
 .col-title { font-size:14px; font-weight:700; color:#e2eaff; flex:1; }
 .col-count { font-size:12px; background:rgba(255,255,255,0.1); border-radius:999px; padding:2px 8px; color:#94a3b8; }
@@ -128,5 +140,12 @@ onMounted(async () => {
 .badge.red { background:rgba(239,68,68,0.15); color:#fca5a5; }
 .badge.blue { background:rgba(59,130,246,0.15); color:#93c5fd; }
 .badge.gray { background:rgba(148,163,184,0.12); color:#94a3b8; }
+.rank-badge { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; background:rgba(139,92,246,0.15); color:#c4b5fd; }
+.rank-badge.rank-1 { background:rgba(34,197,94,0.12); color:#86efac; }
+.rank-badge.rank-2 { background:rgba(59,130,246,0.12); color:#93c5fd; }
+.rank-badge.rank-3 { background:rgba(251,191,36,0.12); color:#fde68a; }
+.rank-badge.rank-4 { background:rgba(249,115,22,0.12); color:#fdba74; }
+.rank-badge.rank-5 { background:rgba(239,68,68,0.12); color:#fca5a5; }
+.task-rejection { font-size:11px; color:#fca5a5; background:rgba(239,68,68,0.08); padding:6px 8px; border-radius:6px; border:1px dashed rgba(239,68,68,0.25); line-height:1.4; }
 .loading-text { color:rgba(200,215,255,0.4); font-size:14px; text-align:center; padding:60px; }
 </style>

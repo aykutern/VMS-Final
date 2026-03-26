@@ -36,6 +36,14 @@
         </div>
         <div v-else class="members-empty">No developers assigned</div>
 
+        <!-- Capacity bar -->
+        <div class="capacity-bar-wrap" v-if="s.maxCapacity">
+          <div class="capacity-label">{{ s.currentLoad || 0 }} / {{ s.maxCapacity }} pts</div>
+          <div class="capacity-bar">
+            <div class="capacity-fill" :style="{ width: Math.min(100, ((s.currentLoad || 0) / s.maxCapacity) * 100) + '%' }"></div>
+          </div>
+        </div>
+
         <div class="sprint-dates">{{ s.startDate }} → {{ s.endDate }}</div>
         <div class="dbl-hint">Double-click for details</div>
       </div>
@@ -71,11 +79,11 @@
         <div class="form-row">
           <div class="form-group">
             <label>Start Date</label>
-            <input v-model="form.startDate" type="date" />
+            <input v-model="form.startDate" type="date" @change="autoEndDate" />
           </div>
           <div class="form-group">
-            <label>End Date</label>
-            <input v-model="form.endDate" type="date" />
+            <label>End Date (auto: 2 weeks)</label>
+            <input v-model="form.endDate" type="date" disabled />
           </div>
         </div>
 
@@ -153,7 +161,7 @@
           <div v-if="loadingTasks" class="loading-text">Loading tasks…</div>
           <table v-else-if="sprintTasks.length > 0" class="tasks-table">
             <thead>
-              <tr><th>Task</th><th>Assignee</th><th>Status</th><th>Priority</th><th>Completed</th></tr>
+              <tr><th>Task</th><th>Assignee</th><th>Status</th><th>Priority</th><th>Rank</th><th>Completed</th></tr>
             </thead>
             <tbody>
               <tr v-for="t in sprintTasks" :key="t.id">
@@ -165,6 +173,7 @@
                   </span>
                 </td>
                 <td>{{ t.priority }}</td>
+                <td><span :class="['rank-badge', 'rank-' + t.rank]">★ {{ t.rank }}</span></td>
                 <td>{{ t.completedAt || '—' }}</td>
               </tr>
             </tbody>
@@ -205,6 +214,14 @@ const loadingTasks = ref(false);
 function initials(name) {
   if (!name) return "?";
   return name.split(" ").map(p => p[0]).join("").toUpperCase().slice(0, 2);
+}
+
+function autoEndDate() {
+  if (form.value.startDate) {
+    const start = new Date(form.value.startDate);
+    start.setDate(start.getDate() + 13);
+    form.value.endDate = start.toISOString().split('T')[0];
+  }
 }
 
 async function openCreateModal() {
@@ -395,4 +412,18 @@ async function fetchSprints() {
 .status-badge.gray { background:rgba(148,163,184,0.12); color:#94a3b8; }
 
 .loading-text, .empty-state, .empty-text { color:rgba(200,215,255,0.4); font-size:14px; text-align:center; padding:40px; }
+
+/* Capacity bar */
+.capacity-bar-wrap { display:flex; align-items:center; gap:8px; }
+.capacity-label { font-size:11px; font-weight:600; color:rgba(200,215,255,0.5); white-space:nowrap; }
+.capacity-bar { flex:1; height:6px; background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden; }
+.capacity-fill { height:100%; background:linear-gradient(90deg,#6366f1,#a855f7); border-radius:999px; transition:width 0.3s; }
+
+/* Rank badge */
+.rank-badge { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; background:rgba(139,92,246,0.15); color:#c4b5fd; }
+.rank-badge.rank-1 { background:rgba(34,197,94,0.12); color:#86efac; }
+.rank-badge.rank-2 { background:rgba(59,130,246,0.12); color:#93c5fd; }
+.rank-badge.rank-3 { background:rgba(251,191,36,0.12); color:#fde68a; }
+.rank-badge.rank-4 { background:rgba(249,115,22,0.12); color:#fdba74; }
+.rank-badge.rank-5 { background:rgba(239,68,68,0.12); color:#fca5a5; }
 </style>

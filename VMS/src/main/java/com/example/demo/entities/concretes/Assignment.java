@@ -49,4 +49,10 @@ public class Assignment extends BaseEntity {
 
     @Column(name = "completed_at")
     private LocalDate completedAt;
+
+    @Column(name = "task_rank")
+    private Integer rank = 1;
+
+    @Column(name = "rejection_reason", length = 1000)
+    private String rejectionReason;
 }

@@ -14,4 +14,6 @@ public class VendorPerformanceResponse {
     private int totalSprints;
     private int completedTasks;
     private int totalTasks;
+    private int completedPoints;
+    private int totalPoints;
 }
