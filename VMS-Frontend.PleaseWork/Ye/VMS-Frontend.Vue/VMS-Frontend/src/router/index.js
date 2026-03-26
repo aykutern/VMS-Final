@@ -18,6 +18,7 @@ import VendorSprints from "../views/vendor/VendorSprints.vue";
 import VendorAssignments from "../views/vendor/VendorAssignments.vue";
 import VendorPersonnel from "../views/vendor/VendorPersonnel.vue";
 import VendorPerformance from "../views/vendor/VendorPerformance.vue";
+import VendorReviews from "../views/vendor/VendorReviews.vue";
 
 // Personnel Views
 import PersonnelHome from "../views/PersonnelHome.vue";
@@ -42,6 +43,7 @@ const routes = [
       { path: "projects/:id", name: "pm-project-detail", component: PMProjectDetail },
       { path: "sprints", name: "pm-sprints", component: PMSprints },
       { path: "assignments", name: "pm-assignments", component: PMAssignments },
+      { path: "reviews", name: "pm-reviews", component: VendorReviews },
       { path: "vendors", name: "pm-vendors", component: PMVendors },
       { path: "announcements", name: "pm-announcements", component: Announcements },
     ],
@@ -58,6 +60,7 @@ const routes = [
       { path: "projects", name: "vendor-projects", component: VendorProjects },
       { path: "sprints", name: "vendor-sprints", component: VendorSprints },
       { path: "assignments", name: "vendor-assignments", component: VendorAssignments },
+      { path: "reviews", name: "vendor-reviews", component: VendorReviews },
       { path: "personnel", name: "vendor-personnel", component: VendorPersonnel },
       { path: "performance", name: "vendor-performance", component: VendorPerformance },
       { path: "announcements", name: "vendor-announcements", component: Announcements },

@@ -35,12 +35,14 @@ public class AssignmentController {
         return assignmentService.getById(id);
     }
 
-    @Operation(summary = "List assignments (optional projectId / sprintId filter)")
+    @Operation(summary = "List assignments (optional projectId / sprintId / vendorId / assigneeId filter)")
     @GetMapping
     public List<AssignmentResponse> getAll(
             @RequestParam(required = false) Integer projectId,
-            @RequestParam(required = false) Integer sprintId) {
-        return assignmentService.getAll(projectId, sprintId);
+            @RequestParam(required = false) Integer sprintId,
+            @RequestParam(required = false) Integer vendorId,
+            @RequestParam(required = false) Integer assigneeId) {
+        return assignmentService.getAll(projectId, sprintId, vendorId, assigneeId);
     }
 
     @Operation(summary = "Update assignment status")

@@ -43,11 +43,24 @@ public class AssignmentServiceImpl implements AssignmentService {
         a.setProject(project);
         a.setName(request.getName());
         a.setPriority(request.getPriority());
+        a.setRank(request.getRank() != null ? request.getRank() : 1);
         a.setAssignedAt(request.getAssignedAt() != null ? request.getAssignedAt() : LocalDate.now());
 
         if (request.getSprintId() != null) {
             Sprint sprint = sprintRepository.findById(request.getSprintId())
                     .orElseThrow(() -> new EntityNotFoundException("Sprint not found: " + request.getSprintId()));
+
+            // Validate sprint capacity
+            int currentLoad = assignmentRepository.findBySprint_IdAndIsActive(sprint.getId(), ACTIVE)
+                    .stream().mapToInt(t -> t.getRank() != null ? t.getRank() : 1).sum();
+            int newRank = request.getRank() != null ? request.getRank() : 1;
+            if (currentLoad + newRank > sprint.getMaxCapacity()) {
+                throw new IllegalArgumentException(
+                    "Sprint capacity exceeded. Current load: " + currentLoad
+                    + ", task rank: " + newRank
+                    + ", max capacity: " + sprint.getMaxCapacity());
+            }
+
             a.setSprint(sprint);
         }
 
@@ -76,13 +89,17 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AssignmentResponse> getAll(Integer projectId, Integer sprintId) {
+    public List<AssignmentResponse> getAll(Integer projectId, Integer sprintId, Integer vendorId, Integer assigneeId) {
         List<Assignment> list;
 
-        if (sprintId != null) {
+        if (assigneeId != null) {
+            list = assignmentRepository.findByAssignee_IdAndIsActive(assigneeId, ACTIVE);
+        } else if (sprintId != null) {
             list = assignmentRepository.findBySprint_IdAndIsActive(sprintId, ACTIVE);
         } else if (projectId != null) {
             list = assignmentRepository.findByProject_IdAndIsActive(projectId, ACTIVE);
+        } else if (vendorId != null) {
+            list = assignmentRepository.findByProject_Vendor_IdAndIsActive(vendorId, ACTIVE);
         } else {
             list = assignmentRepository.findByIsActive(ACTIVE);
         }
@@ -116,6 +133,10 @@ public class AssignmentServiceImpl implements AssignmentService {
         }
 
         a.setStatus(newStatus);
+
+        if (request.getRejectionReason() != null) {
+            a.setRejectionReason(request.getRejectionReason());
+        }
 
         if (newStatus == AssignmentStatus.IN_PROGRESS && a.getAssignedAt() == null) {
             a.setAssignedAt(LocalDate.now());
@@ -157,8 +178,10 @@ public class AssignmentServiceImpl implements AssignmentService {
         r.setName(a.getName());
         r.setPriority(a.getPriority());
         r.setStatus(a.getStatus());
+        r.setRank(a.getRank());
         r.setAssignedAt(a.getAssignedAt());
         r.setCompletedAt(a.getCompletedAt());
+        r.setRejectionReason(a.getRejectionReason());
 
         r.setCreatedAt(a.getCreatedAt());
         r.setUpdatedAt(a.getUpdatedAt());

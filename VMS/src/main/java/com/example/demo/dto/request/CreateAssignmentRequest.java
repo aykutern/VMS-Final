@@ -2,6 +2,8 @@ package com.example.demo.dto.request;
 
 import com.example.demo.enums.AssignmentPriority;
 import com.example.demo.enums.AssignmentStatus;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +24,11 @@ public class CreateAssignmentRequest {
 
     @NotNull
     private AssignmentPriority priority;
+
+    @NotNull
+    @Min(1)
+    @Max(5)
+    private Integer rank = 1;
 
     private Integer sprintId;
 

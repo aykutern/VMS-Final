@@ -19,4 +19,6 @@ public interface AssignmentRepository extends JpaRepository<Assignment, Integer>
 
     List<Assignment> findByAssignee_IdAndIsActive(Integer assigneeId, Integer isActive);
 
+    List<Assignment> findByProject_Vendor_IdAndIsActive(Integer vendorId, Integer isActive);
+
 }

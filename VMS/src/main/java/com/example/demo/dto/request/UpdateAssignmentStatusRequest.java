@@ -13,4 +13,6 @@ public class UpdateAssignmentStatusRequest {
 
     @NotNull
     private AssignmentStatus status;
+
+    private String rejectionReason;
 }

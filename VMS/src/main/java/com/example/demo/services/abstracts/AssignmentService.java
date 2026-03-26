@@ -12,7 +12,7 @@ public interface AssignmentService {
 
     AssignmentResponse getById(Integer id);
 
-    List<AssignmentResponse> getAll(Integer projectId, Integer sprintId);
+    List<AssignmentResponse> getAll(Integer projectId, Integer sprintId, Integer vendorId, Integer assigneeId);
 
     AssignmentResponse updateStatus(Integer id, UpdateAssignmentStatusRequest request);
 

@@ -24,9 +24,12 @@ public class AssignmentResponse {
     private String name;
     private AssignmentPriority priority;
     private AssignmentStatus status;
+    private Integer rank;
 
     private LocalDate assignedAt;
     private LocalDate completedAt;
+    
+    private String rejectionReason;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

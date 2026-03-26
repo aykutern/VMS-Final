@@ -1,0 +1,23 @@
+
+> vms-frontend@0.0.0 build
+> vite build
+
+[33mYou are using Node.js 20.12.2. Vite requires Node.js version 20.19+ or 22.12+. Please upgrade your Node.js version.[39m
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 18 modules transformed.
+[31m✗[39m Build failed in 291ms
+[31merror during build:
+[31m[vite:vue] [plugin vite:vue] src/views/vendor/VendorReviews.vue (56:3): Invalid end tag.[31m
+file: [36mC:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/src/views/vendor/VendorReviews.vue:56:3[31m
+SyntaxError: [plugin vite:vue] src/views/vendor/VendorReviews.vue (56:3): Invalid end tag.
+    at createCompilerError (C:\Users\msi\Desktop\MyWorkspace\VMS-Complete\VMS-Frontend.PleaseWork\Ye\VMS-Frontend.Vue\VMS-Frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.prod.js:1374:17)
+    at emitError (C:\Users\msi\Desktop\MyWorkspace\VMS-Complete\VMS-Frontend.PleaseWork\Ye\VMS-Frontend.Vue\VMS-Frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.prod.js:2980:5)
+    at Object.onclosetag (C:\Users\msi\Desktop\MyWorkspace\VMS-Complete\VMS-Frontend.PleaseWork\Ye\VMS-Frontend.Vue\VMS-Frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.prod.js:2387:9)
+    at Tokenizer.stateInClosingTagName (C:\Users\msi\Desktop\MyWorkspace\VMS-Complete\VMS-Frontend.PleaseWork\Ye\VMS-Frontend.Vue\VMS-Frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.prod.js:799:16)
+    at Tokenizer.parse (C:\Users\msi\Desktop\MyWorkspace\VMS-Complete\VMS-Frontend.PleaseWork\Ye\VMS-Frontend.Vue\VMS-Frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.prod.js:1157:16)
+    at Object.baseParse (C:\Users\msi\Desktop\MyWorkspace\VMS-Complete\VMS-Frontend.PleaseWork\Ye\VMS-Frontend.Vue\VMS-Frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.prod.js:3012:13)
+    at Object.parse (C:\Users\msi\Desktop\MyWorkspace\VMS-Complete\VMS-Frontend.PleaseWork\Ye\VMS-Frontend.Vue\VMS-Frontend\node_modules\@vue\compiler-dom\dist\compiler-dom.cjs.prod.js:665:23)
+    at Object.parse$1 [as parse] (C:\Users\msi\Desktop\MyWorkspace\VMS-Complete\VMS-Frontend.PleaseWork\Ye\VMS-Frontend.Vue\VMS-Frontend\node_modules\@vue\compiler-sfc\dist\compiler-sfc.cjs.js:1824:24)
+    at createDescriptor (file:///C:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/node_modules/@vitejs/plugin-vue/dist/index.mjs:54:42)
+    at transformMain (file:///C:/Users/msi/Desktop/MyWorkspace/VMS-Complete/VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/node_modules/@vitejs/plugin-vue/dist/index.mjs:1319:33)[39m

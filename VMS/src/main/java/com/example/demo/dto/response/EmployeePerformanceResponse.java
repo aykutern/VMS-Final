@@ -12,5 +12,7 @@ public class EmployeePerformanceResponse {
     private String fullName;
     private int completedTasks;
     private int totalTasks;
+    private int completedPoints;
+    private int totalPoints;
     private Double avgCompletionDays;
 }

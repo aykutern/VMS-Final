@@ -26,6 +26,9 @@ public class SprintResponse {
     /** Assigned developers */
     private List<MemberDto> members;
 
+    private Integer maxCapacity;
+    private Integer currentLoad;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String createdBy;

@@ -7,6 +7,7 @@ import com.example.demo.entities.concretes.Project;
 import com.example.demo.entities.concretes.Sprint;
 import com.example.demo.entities.concretes.Users;
 import com.example.demo.enums.SprintStatus;
+import com.example.demo.repositories.AssignmentRepository;
 import com.example.demo.repositories.ProjectRepository;
 import com.example.demo.repositories.SprintRepository;
 import com.example.demo.repositories.UserRepository;
@@ -28,6 +29,7 @@ public class SprintServiceImpl implements SprintService {
     private final SprintRepository sprintRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final AssignmentRepository assignmentRepository;
 
     private static final int ACTIVE = 1;
     private static final int DELETED = 0;
@@ -42,9 +44,11 @@ public class SprintServiceImpl implements SprintService {
         sprint.setProject(project);
         sprint.setSprintName(request.getSprintName());
         sprint.setStartDate(request.getStartDate());
-        sprint.setEndDate(request.getEndDate());
+        // Auto-calculate endDate: startDate + 13 days = 2 weeks (14 days inclusive)
+        sprint.setEndDate(request.getStartDate().plusDays(13));
         sprint.setGoal(request.getGoal());
         sprint.setStatus(request.getStatus());
+        sprint.setMaxCapacity(10);
         sprint.setIsActive(ACTIVE);
 
         // Assign members (validate each isn't already in an active sprint)
@@ -157,6 +161,12 @@ public class SprintServiceImpl implements SprintService {
         response.setEndDate(sprint.getEndDate());
         response.setGoal(sprint.getGoal());
         response.setStatus(sprint.getStatus());
+        response.setMaxCapacity(sprint.getMaxCapacity());
+
+        // Compute current load (sum of task ranks in this sprint)
+        int currentLoad = assignmentRepository.findBySprint_IdAndIsActive(sprint.getId(), ACTIVE)
+                .stream().mapToInt(a -> a.getRank() != null ? a.getRank() : 1).sum();
+        response.setCurrentLoad(currentLoad);
 
         // Map members
         if (sprint.getMembers() != null) {

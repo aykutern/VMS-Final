@@ -10,6 +10,8 @@
             <th>Employee</th>
             <th>Completed Tasks</th>
             <th>Total Tasks</th>
+            <th>Completed Pts</th>
+            <th>Total Pts</th>
             <th>Completion Rate</th>
             <th>Avg Completion (days)</th>
           </tr>
@@ -35,6 +37,10 @@
               <span class="completed-count">{{ e.completedTasks }}</span>
             </td>
             <td>{{ e.totalTasks }}</td>
+            <td>
+              <span class="completed-count">{{ e.completedPoints }}</span>
+            </td>
+            <td>{{ e.totalPoints }}</td>
             <td>
               <div class="rate-bar-wrap">
                 <div class="rate-bar">
@@ -69,8 +75,11 @@ const loading = ref(true);
 // Sort by completedTasks desc, then avgCompletionDays asc (lower = more efficient)
 const rankedEmployees = computed(() => {
   return [...employees.value].sort((a, b) => {
+    // Sort by completed points desc first
+    if (b.completedPoints !== a.completedPoints) return b.completedPoints - a.completedPoints;
+    // Then by completed tasks
     if (b.completedTasks !== a.completedTasks) return b.completedTasks - a.completedTasks;
-    // If same completed tasks, lower avg days = more efficient = ranked higher
+    // If same, lower avg days = more efficient = ranked higher
     const aAvg = a.avgCompletionDays ?? Infinity;
     const bAvg = b.avgCompletionDays ?? Infinity;
     return aAvg - bAvg;

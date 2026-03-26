@@ -123,6 +123,10 @@ public class DashboardController {
             }
             int totalTasks = tasks.size();
             int completedTasks = (int) tasks.stream().filter(a -> a.getStatus() == AssignmentStatus.COMPLETED).count();
+            int totalPoints = tasks.stream().mapToInt(a -> a.getRank() != null ? a.getRank() : 1).sum();
+            int completedPoints = tasks.stream()
+                    .filter(a -> a.getStatus() == AssignmentStatus.COMPLETED)
+                    .mapToInt(a -> a.getRank() != null ? a.getRank() : 1).sum();
 
             VendorPerformanceResponse vp = new VendorPerformanceResponse();
             vp.setVendorId(vendor.getId());
@@ -131,6 +135,8 @@ public class DashboardController {
             vp.setTotalSprints(totalSprints);
             vp.setCompletedTasks(completedTasks);
             vp.setTotalTasks(totalTasks);
+            vp.setCompletedPoints(completedPoints);
+            vp.setTotalPoints(totalPoints);
             result.add(vp);
         }
 
@@ -149,6 +155,10 @@ public class DashboardController {
             List<Assignment> tasks = assignmentRepository.findByAssignee_IdAndIsActive(emp.getId(), 1);
             int total = tasks.size();
             int completed = (int) tasks.stream().filter(a -> a.getStatus() == AssignmentStatus.COMPLETED).count();
+            int totalPoints = tasks.stream().mapToInt(a -> a.getRank() != null ? a.getRank() : 1).sum();
+            int completedPoints = tasks.stream()
+                    .filter(a -> a.getStatus() == AssignmentStatus.COMPLETED)
+                    .mapToInt(a -> a.getRank() != null ? a.getRank() : 1).sum();
 
             // Avg completion days = average of (completedAt - assignedAt) in business days
             Double avgDays = null;
@@ -168,6 +178,8 @@ public class DashboardController {
             ep.setFullName(emp.getPersonnelName() + " " + emp.getPersonnelSurname());
             ep.setCompletedTasks(completed);
             ep.setTotalTasks(total);
+            ep.setCompletedPoints(completedPoints);
+            ep.setTotalPoints(totalPoints);
             ep.setAvgCompletionDays(avgDays);
             result.add(ep);
         }

@@ -38,6 +38,7 @@
             <div class="task-name">{{ t.name }}</div>
             <div class="task-meta">
               <span :class="['badge', priorityColor(t.priority)]">{{ t.priority }}</span>
+              <span :class="['rank-badge', 'rank-' + t.rank]">★ {{ t.rank }}</span>
               <span class="task-project">{{ t.projectName }}</span>
             </div>
           </div>
@@ -142,5 +143,11 @@ async function onDrop(newStatus) {
 .badge.red { background:rgba(239,68,68,0.15); color:#fca5a5; }
 .badge.blue { background:rgba(59,130,246,0.15); color:#93c5fd; }
 .badge.gray { background:rgba(148,163,184,0.12); color:#94a3b8; }
+.rank-badge { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; background:rgba(139,92,246,0.15); color:#c4b5fd; }
+.rank-badge.rank-1 { background:rgba(34,197,94,0.12); color:#86efac; }
+.rank-badge.rank-2 { background:rgba(59,130,246,0.12); color:#93c5fd; }
+.rank-badge.rank-3 { background:rgba(251,191,36,0.12); color:#fde68a; }
+.rank-badge.rank-4 { background:rgba(249,115,22,0.12); color:#fdba74; }
+.rank-badge.rank-5 { background:rgba(239,68,68,0.12); color:#fca5a5; }
 .loading-text { color:rgba(200,215,255,0.4); font-size:14px; text-align:center; padding:40px; }
 </style>

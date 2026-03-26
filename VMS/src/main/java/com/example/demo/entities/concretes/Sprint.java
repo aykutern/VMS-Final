@@ -50,4 +50,7 @@ public class Sprint extends BaseEntity {
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<Users> members = new HashSet<>();
+
+    @Column(name = "max_capacity")
+    private Integer maxCapacity = 10;
 }
