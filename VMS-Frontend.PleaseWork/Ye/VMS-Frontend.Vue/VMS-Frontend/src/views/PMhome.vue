@@ -208,30 +208,31 @@ onMounted(async () => {
 .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 
 .stat-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   padding: 20px;
   display: flex;
   align-items: center;
   gap: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
 .stat-icon {
   width: 44px; height: 44px;
-  border-radius: 12px;
+  border-radius: 10px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
 }
 .stat-icon svg { width: 22px; height: 22px; fill: #fff; }
-.stat-icon.blue { background: rgba(59,130,246,0.2); }
-.stat-icon.green { background: rgba(34,197,94,0.2); }
-.stat-icon.amber { background: rgba(251,191,36,0.2); }
-.stat-icon.purple { background: rgba(168,85,247,0.2); }
+.stat-icon.blue { background: #2563eb; }
+.stat-icon.green { background: #16a34a; }
+.stat-icon.amber { background: #d97706; }
+.stat-icon.purple { background: #7c3aed; }
 
-.stat-value { font-size: 26px; font-weight: 800; color: #f3f7ff; }
-.stat-label { font-size: 12px; color: rgba(200,215,255,0.55); margin-top: 2px; }
+.stat-value { font-size: 26px; font-weight: 800; color: #0f172a; }
+.stat-label { font-size: 12px; color: #64748b; margin-top: 2px; }
 
 /* Pie Chart Card */
 .chart-card {
@@ -239,13 +240,17 @@ onMounted(async () => {
   align-items: center;
   gap: 32px;
   padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 .chart-container { width: 180px; height: 180px; flex-shrink: 0; }
 .chart-legend { flex: 1; display: flex; flex-direction: column; gap: 14px; }
-.legend-title { font-size: 15px; font-weight: 700; color: #e2eaff; }
+.legend-title { font-size: 15px; font-weight: 700; color: #0f172a; }
 .legend-items { display: flex; flex-direction: column; gap: 8px; }
-.legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(200,215,255,0.7); }
-.legend-item strong { margin-left: auto; color: #f3f7ff; font-size: 16px; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #475569; }
+.legend-item strong { margin-left: auto; color: #0f172a; font-size: 16px; }
 .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .sprint-countdown {
   margin-top: 8px;
@@ -253,20 +258,21 @@ onMounted(async () => {
   align-items: baseline;
   gap: 8px;
   padding: 12px 16px;
-  background: rgba(99,102,241,0.08);
-  border: 1px solid rgba(99,102,241,0.2);
-  border-radius: 12px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
 }
-.countdown-number { font-size: 28px; font-weight: 800; color: #a5b4fc; }
-.countdown-label { font-size: 13px; color: rgba(200,215,255,0.6); }
+.countdown-number { font-size: 28px; font-weight: 800; color: #2563eb; }
+.countdown-label { font-size: 13px; color: #475569; }
 
 .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
 .card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 .card.full-width { grid-column: 1 / -1; }
 
@@ -276,43 +282,43 @@ onMounted(async () => {
   justify-content: space-between;
   margin-bottom: 16px;
 }
-.card-header h3 { margin: 0; font-size: 15px; font-weight: 700; color: #e2eaff; }
+.card-header h3 { margin: 0; font-size: 15px; font-weight: 700; color: #0f172a; }
 
 .link-btn {
   font-size: 12px;
-  color: #93c5fd;
+  color: #2563eb;
   text-decoration: none;
   font-weight: 600;
 }
-.link-btn:hover { color: #bfdbfe; }
+.link-btn:hover { color: #1d4ed8; }
 
 .project-item {
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
-.project-item:hover { background: rgba(255,255,255,0.05); }
-.project-name { font-size: 14px; font-weight: 600; color: #e2eaff; }
+.project-item:hover { background: #f1f5f9; }
+.project-name { font-size: 14px; font-weight: 600; color: #0f172a; }
 .project-meta { margin-top: 4px; }
 
-.announcement-item { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.announcement-item { padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
 .announcement-item:last-child { border-bottom: none; }
-.ann-title { font-size: 14px; font-weight: 600; color: #e2eaff; }
-.ann-content { font-size: 12px; color: rgba(200,215,255,0.55); margin-top: 4px; line-height: 1.5; }
+.ann-title { font-size: 14px; font-weight: 600; color: #0f172a; }
+.ann-content { font-size: 12px; color: #64748b; margin-top: 4px; line-height: 1.5; }
 
 .sprint-table-wrap { overflow-x: auto; }
 .sprint-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.sprint-table th { text-align: left; padding: 10px 12px; color: rgba(200,215,255,0.5); font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.07); }
-.sprint-table td { padding: 10px 12px; color: #d1deff; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.sprint-table th { text-align: left; padding: 10px 12px; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+.sprint-table td { padding: 10px 12px; color: #1e293b; border-bottom: 1px solid #f1f5f9; }
 .sprint-table tr:last-child td { border-bottom: none; }
-.sprint-table tr:hover td { background: rgba(255,255,255,0.03); }
+.sprint-table tr:hover td { background: #f8fafc; }
 
 .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-.badge.blue { background: rgba(59,130,246,0.15); color: #93c5fd; }
-.badge.green { background: rgba(34,197,94,0.15); color: #86efac; }
+.badge.blue { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+.badge.green { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
 
-.loading-text { color: rgba(200,215,255,0.4); font-size: 14px; text-align: center; padding: 20px; }
-.empty-text { color: rgba(200,215,255,0.4); font-size: 13px; text-align: center; padding: 16px; }
+.loading-text { color: #94a3b8; font-size: 14px; text-align: center; padding: 20px; }
+.empty-text { color: #94a3b8; font-size: 13px; text-align: center; padding: 16px; }
 </style>

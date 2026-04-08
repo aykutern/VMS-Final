@@ -106,46 +106,46 @@ onMounted(async () => {
 <style scoped>
 .my-tasks-page { display:flex; flex-direction:column; gap:24px; }
 .page-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
-.page-header h2 { margin:0; font-size:20px; font-weight:800; color:#f3f7ff; }
-.task-pills { display:flex; gap:8px; }
+.task-pills { display:flex; gap:8px; flex-wrap:wrap; }
 .pill { padding:4px 14px; border-radius:999px; font-size:12px; font-weight:600; }
-.pill.gray { background:rgba(100,116,139,0.15); color:#94a3b8; }
-.pill.amber { background:rgba(251,191,36,0.15); color:#fde68a; }
-.pill.green { background:rgba(34,197,94,0.15); color:#86efac; }
+.pill.gray { background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; }
+.pill.amber { background:#fffbeb; color:#d97706; border:1px solid #fde68a; }
+.pill.purple { background:#f5f3ff; color:#7c3aed; border:1px solid #ddd6fe; }
+.pill.green { background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; }
 
-.kanban { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-.kanban-col { background:rgba(255,255,255,0.03); border:2px solid rgba(255,255,255,0.06); border-radius:16px; padding:16px; min-height:400px; display:flex; flex-direction:column; gap:10px; transition:border-color 0.15s; }
-.kanban-col.drag-over { border-color:rgba(99,102,241,0.5); background:rgba(99,102,241,0.05); }
+.kanban { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+.kanban-col { background:#f8fafc; border:2px solid #e2e8f0; border-radius:12px; padding:16px; min-height:400px; display:flex; flex-direction:column; gap:10px; transition:border-color 0.15s; }
+.kanban-col.drag-over { border-color:#6366f1; background:#f5f3ff; }
 .col-header { display:flex; align-items:center; gap:8px; }
 .col-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 .col-dot.gray { background:#64748b; }
 .col-dot.amber { background:#f59e0b; }
 .col-dot.purple { background:#a855f7; }
 .col-dot.green { background:#22c55e; }
-.col-title { font-size:14px; font-weight:700; color:#e2eaff; flex:1; }
-.col-count { font-size:12px; background:rgba(255,255,255,0.1); border-radius:999px; padding:2px 8px; color:#94a3b8; }
+.col-title { font-size:14px; font-weight:700; color:#0f172a; flex:1; }
+.col-count { font-size:12px; background:#e2e8f0; border-radius:999px; padding:2px 8px; color:#64748b; font-weight:600; }
 .task-stack { display:flex; flex-direction:column; gap:10px; }
-.task-card { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.09); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:8px; cursor:grab; user-select:none; transition:border-color 0.15s,transform 0.1s; }
+.task-card { background:#ffffff; border:1px solid #e2e8f0; border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:8px; cursor:grab; user-select:none; transition:border-color 0.15s,box-shadow 0.15s; box-shadow:0 1px 3px rgba(0,0,0,0.04); }
 .task-card:active { cursor:grabbing; transform:rotate(1deg) scale(1.02); }
-.task-card:hover { border-color:rgba(99,102,241,0.35); }
-.drag-handle { font-size:14px; color:rgba(200,215,255,0.25); margin-bottom:-4px; }
-.task-name { font-size:13px; font-weight:600; color:#e2eaff; line-height:1.4; }
+.task-card:hover { border-color:#a78bfa; box-shadow:0 4px 12px rgba(99,102,241,0.08); }
+.drag-handle { font-size:14px; color:#cbd5e1; margin-bottom:-4px; }
+.task-name { font-size:13px; font-weight:600; color:#0f172a; line-height:1.4; }
 .task-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.task-project { font-size:11px; color:rgba(200,215,255,0.5); }
-.task-date { font-size:11px; color:rgba(200,215,255,0.35); }
-.col-empty { font-size:12px; color:rgba(200,215,255,0.25); text-align:center; padding:20px; border:2px dashed rgba(255,255,255,0.08); border-radius:10px; }
+.task-project { font-size:11px; color:#94a3b8; }
+.task-date { font-size:11px; color:#94a3b8; }
+.col-empty { font-size:12px; color:#94a3b8; text-align:center; padding:20px; border:2px dashed #e2e8f0; border-radius:10px; }
 .badge { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; }
-.badge.green { background:rgba(34,197,94,0.15); color:#86efac; }
-.badge.amber { background:rgba(251,191,36,0.15); color:#fde68a; }
-.badge.red { background:rgba(239,68,68,0.15); color:#fca5a5; }
-.badge.blue { background:rgba(59,130,246,0.15); color:#93c5fd; }
-.badge.gray { background:rgba(148,163,184,0.12); color:#94a3b8; }
-.rank-badge { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; background:rgba(139,92,246,0.15); color:#c4b5fd; }
-.rank-badge.rank-1 { background:rgba(34,197,94,0.12); color:#86efac; }
-.rank-badge.rank-2 { background:rgba(59,130,246,0.12); color:#93c5fd; }
-.rank-badge.rank-3 { background:rgba(251,191,36,0.12); color:#fde68a; }
-.rank-badge.rank-4 { background:rgba(249,115,22,0.12); color:#fdba74; }
-.rank-badge.rank-5 { background:rgba(239,68,68,0.12); color:#fca5a5; }
-.task-rejection { font-size:11px; color:#fca5a5; background:rgba(239,68,68,0.08); padding:6px 8px; border-radius:6px; border:1px dashed rgba(239,68,68,0.25); line-height:1.4; }
-.loading-text { color:rgba(200,215,255,0.4); font-size:14px; text-align:center; padding:60px; }
+.badge.green { background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; }
+.badge.amber { background:#fffbeb; color:#d97706; border:1px solid #fde68a; }
+.badge.red { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
+.badge.blue { background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; }
+.badge.gray { background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; }
+.rank-badge { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; background:#f5f3ff; color:#7c3aed; border:1px solid #ddd6fe; }
+.rank-badge.rank-1 { background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; }
+.rank-badge.rank-2 { background:#eff6ff; color:#2563eb; border-color:#bfdbfe; }
+.rank-badge.rank-3 { background:#fffbeb; color:#d97706; border-color:#fde68a; }
+.rank-badge.rank-4 { background:#fff7ed; color:#ea580c; border-color:#fed7aa; }
+.rank-badge.rank-5 { background:#fef2f2; color:#dc2626; border-color:#fecaca; }
+.task-rejection { font-size:11px; color:#dc2626; background:#fef2f2; padding:6px 8px; border-radius:6px; border:1px dashed #fecaca; line-height:1.4; }
+.loading-text { color:#94a3b8; font-size:14px; text-align:center; padding:60px; }
 </style>

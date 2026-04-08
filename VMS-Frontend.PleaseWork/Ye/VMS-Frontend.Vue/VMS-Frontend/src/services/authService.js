@@ -2,21 +2,15 @@ import { http } from "../lib/http.js";
 
 const STORAGE_KEY = "user";
 
-// Which storage to use — set by login()
-function getStorage() {
-  // If we stored with "remember me", localStorage has the key; otherwise sessionStorage
-  return localStorage.getItem(STORAGE_KEY)
-    ? localStorage
-    : sessionStorage;
+export async function login({ username, password }) {
+  const { data } = await http.post("/api/auth/login", { username, password });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  return data;
 }
 
-export async function login({ username, password, rememberMe = false }) {
-  const { data } = await http.post("/api/auth/login", { username, password });
-
-  // Remember me → persist across browser restarts; otherwise session-only
-  const storage = rememberMe ? localStorage : sessionStorage;
-  storage.setItem(STORAGE_KEY, JSON.stringify(data));
-
+export async function register(payload) {
+  const { data } = await http.post("/api/auth/register", payload);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   return data;
 }
 
