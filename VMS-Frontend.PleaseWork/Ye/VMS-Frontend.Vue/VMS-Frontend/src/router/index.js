@@ -43,7 +43,6 @@ const routes = [
       { path: "projects/:id", name: "pm-project-detail", component: PMProjectDetail },
       { path: "sprints", name: "pm-sprints", component: PMSprints },
       { path: "assignments", name: "pm-assignments", component: PMAssignments },
-      { path: "reviews", name: "pm-reviews", component: VendorReviews },
       { path: "vendors", name: "pm-vendors", component: PMVendors },
       { path: "announcements", name: "pm-announcements", component: Announcements },
     ],

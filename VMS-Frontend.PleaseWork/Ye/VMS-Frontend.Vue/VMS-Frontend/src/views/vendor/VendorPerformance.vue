@@ -105,41 +105,39 @@ function completionRate(e) {
 
 <style scoped>
 .performance-page { display:flex; flex-direction:column; gap:24px; }
-.page-header { display:flex; align-items:center; justify-content:space-between; }
-.page-header h2 { margin:0; font-size:20px; font-weight:800; color:#f3f7ff; }
 
-.perf-table { width:100%; border-collapse:collapse; font-size:13px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; overflow:hidden; }
-.perf-table th { text-align:left; padding:14px 16px; color:rgba(200,215,255,0.5); font-weight:600; border-bottom:1px solid rgba(255,255,255,0.07); white-space:nowrap; background:rgba(255,255,255,0.02); }
-.perf-table td { padding:14px 16px; color:#d1deff; border-bottom:1px solid rgba(255,255,255,0.04); }
+.perf-table { width:100%; border-collapse:collapse; font-size:13px; background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+.perf-table th { text-align:left; padding:14px 16px; color:#64748b; font-weight:600; border-bottom:1px solid #e2e8f0; white-space:nowrap; background:#f8fafc; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; }
+.perf-table td { padding:14px 16px; color:#1e293b; border-bottom:1px solid #f1f5f9; }
 .perf-table tr:last-child td { border-bottom:none; }
-.perf-table tr:hover td { background:rgba(255,255,255,0.03); }
+.perf-table tr:hover td { background:#f8fafc; }
 
 /* Top performer row highlight */
-.top-performer td { background:rgba(251,191,36,0.04) !important; }
+.top-performer td { background:#fffbeb !important; }
 
 .rank-cell { width: 60px; }
 .rank-wrap { display: flex; align-items: center; gap: 6px; }
 .rank-crown { display: inline-flex; align-items: center; width: 16px; flex-shrink: 0; }
-.rank-crown svg { width: 15px; height: 15px; fill: #fbbf24; }
+.rank-crown svg { width: 15px; height: 15px; fill: #d97706; }
 .rank-icon-placeholder { display: inline-block; width: 16px; flex-shrink: 0; }
-.rank-num { font-size: 14px; font-weight: 700; color: rgba(200,215,255,0.5); }
-.rank-num--gold { color: #fbbf24; }
+.rank-num { font-size: 14px; font-weight: 700; color: #94a3b8; }
+.rank-num--gold { color: #d97706; }
 
-.emp-name { display:flex; align-items:center; gap:8px; font-weight:600; color:#e2eaff; }
+.emp-name { display:flex; align-items:center; gap:8px; font-weight:600; color:#0f172a; }
 .top-badge { padding:3px 10px; background:linear-gradient(135deg,#f59e0b,#d97706); border-radius:999px; font-size:10px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.05em; }
 
-.completed-count { font-size:16px; font-weight:800; color:#86efac; }
+.completed-count { font-size:16px; font-weight:800; color:#16a34a; }
 
 .rate-bar-wrap { display:flex; align-items:center; gap:8px; }
-.rate-bar { width:80px; height:6px; background:rgba(255,255,255,0.08); border-radius:999px; overflow:hidden; }
+.rate-bar { width:80px; height:6px; background:#e2e8f0; border-radius:999px; overflow:hidden; }
 .rate-fill { height:100%; background:linear-gradient(90deg,#22c55e,#16a34a); border-radius:999px; transition:width 0.3s; }
-.rate-label { font-size:12px; color:#86efac; font-weight:600; }
+.rate-label { font-size:12px; color:#16a34a; font-weight:600; }
 
 .avg-days { padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; }
-.avg-days.fast { background:rgba(34,197,94,0.15); color:#86efac; }
-.avg-days.medium { background:rgba(251,191,36,0.15); color:#fde68a; }
-.avg-days.slow { background:rgba(239,68,68,0.15); color:#fca5a5; }
-.no-data { color:rgba(200,215,255,0.3); }
+.avg-days.fast { background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; }
+.avg-days.medium { background:#fffbeb; color:#d97706; border:1px solid #fde68a; }
+.avg-days.slow { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
+.no-data { color:#94a3b8; }
 
-.loading-text,.empty-state { color:rgba(200,215,255,0.4); font-size:14px; text-align:center; padding:40px; }
+.loading-text,.empty-state { color:#94a3b8; font-size:14px; text-align:center; padding:40px; }
 </style>

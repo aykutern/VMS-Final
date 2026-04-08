@@ -117,6 +117,22 @@ public class AssignmentServiceImpl implements AssignmentService {
             throw new EntityNotFoundException("Assignment not found: " + id);
         }
 
+        // --- Role Check ---
+        String currentUsername = com.example.demo.config.CurrentUser.get();
+        if (currentUsername != null) {
+            Users currentUser = userRepository.findByUsername(currentUsername)
+                    .orElse(null);
+            
+            if (currentUser != null && currentUser.getUserType() == com.example.demo.enums.UserType.MANAGER) {
+                // Product Managers cannot approve or reject tasks (move to COMPLETED or back to IN_PROGRESS from IN_REVIEW)
+                // They also shouldn't be the ones triggering the review process, but we focus on the "Reviewer" role.
+                if (request.getStatus() == AssignmentStatus.COMPLETED || a.getStatus() == AssignmentStatus.IN_REVIEW) {
+                    throw new IllegalArgumentException("Product Managers are not authorized to process task reviews.");
+                }
+            }
+        }
+        // ------------------
+
         AssignmentStatus newStatus = request.getStatus();
         AssignmentStatus oldStatus = a.getStatus();
 

@@ -48,9 +48,8 @@ const pageTitle = computed(() => titleMap[route.name] ?? "VMS");
 .app-layout {
   display: flex;
   min-height: 100vh;
-  background: #07101e;
-  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
-  color: #e2eaff;
+  background: var(--bg-page);
+  color: var(--text-primary);
 }
 
 .main-area {
@@ -62,7 +61,14 @@ const pageTitle = computed(() => titleMap[route.name] ?? "VMS");
 
 .page-content {
   flex: 1;
-  padding: 28px;
+  padding: 32px 40px;
   overflow-y: auto;
+}
+
+/* Responsive adjustment for page content */
+@media (max-width: 768px) {
+  .page-content {
+    padding: 20px;
+  }
 }
 </style>

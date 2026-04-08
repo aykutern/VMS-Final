@@ -28,10 +28,6 @@
           <svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
           Assignments
         </router-link>
-        <router-link to="/pm/reviews" class="nav-item">
-          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-          Task Reviews
-        </router-link>
         <router-link to="/pm/announcements" class="nav-item">
           <svg viewBox="0 0 24 24"><path d="M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"/></svg>
           Announcements
@@ -138,62 +134,63 @@ function handleLogout() {
 
 <style scoped>
 .sidebar {
-  width: 240px;
+  width: 260px;
   min-height: 100vh;
-  background: rgba(8, 14, 28, 0.92);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(20px);
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   padding: 0;
   flex-shrink: 0;
+  box-shadow: 1px 0 2px rgba(0,0,0,0.02);
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 24px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  color: #f3f7ff;
+  padding: 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
   font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.02em;
+  font-size: 0.9375rem;
+  letter-spacing: -0.01em;
 }
 
 .logo {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--brand-primary);
   display: grid;
   place-items: center;
-  font-size: 11px;
-  font-weight: 900;
+  font-size: 0.75rem;
+  font-weight: 800;
   color: #fff;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   flex-shrink: 0;
 }
 
 .nav {
-  padding: 16px 12px;
+  padding: 20px 16px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  overflow-y: auto;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  color: rgba(200, 215, 255, 0.65);
-  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
   font-weight: 500;
   text-decoration: none;
-  transition: background 0.15s, color 0.15s;
+  transition: all 0.15s ease;
 }
 
 .nav-item svg {
@@ -201,43 +198,50 @@ function handleLogout() {
   height: 18px;
   fill: currentColor;
   flex-shrink: 0;
+  opacity: 0.8;
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #f3f7ff;
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
 }
 
 .nav-item.router-link-active {
-  background: rgba(59, 130, 246, 0.18);
-  color: #93c5fd;
+  background: #eff6ff; /* light blue 50 */
+  color: var(--brand-primary);
+}
+
+.nav-item.router-link-active svg {
+  opacity: 1;
 }
 
 .sidebar-footer {
-  padding: 16px 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 20px 16px;
+  border-top: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
+  background: var(--bg-page);
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .avatar {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  background: #e2e8f0;
   display: grid;
   place-items: center;
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
   flex-shrink: 0;
+  border: 1px solid var(--border-strong);
 }
 
 .user-details {
@@ -245,34 +249,35 @@ function handleLogout() {
 }
 
 .user-name {
-  font-size: 13px;
+  font-size: 0.875rem;
   font-weight: 600;
-  color: #e2eaff;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .user-role {
-  font-size: 11px;
-  color: rgba(200, 215, 255, 0.5);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
   margin-top: 2px;
 }
 
 .logout-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   width: 100%;
-  padding: 9px 12px;
-  border-radius: 10px;
-  background: rgba(255, 80, 80, 0.08);
-  border: 1px solid rgba(255, 80, 80, 0.15);
-  color: rgba(255, 150, 150, 0.9);
-  font-size: 13px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  background: #fff;
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.15s ease;
 }
 
 .logout-btn svg {
@@ -282,6 +287,8 @@ function handleLogout() {
 }
 
 .logout-btn:hover {
-  background: rgba(255, 80, 80, 0.15);
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: var(--brand-danger);
 }
 </style>

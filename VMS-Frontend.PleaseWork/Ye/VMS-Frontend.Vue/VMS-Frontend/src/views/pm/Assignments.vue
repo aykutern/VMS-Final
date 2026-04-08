@@ -80,32 +80,31 @@ function priorityColor(p) { return { HIGH: "red", MEDIUM: "amber", LOW: "blue", 
 <style scoped>
 .assignments-page { display:flex; flex-direction:column; gap:24px; }
 .page-header { display:flex; align-items:center; justify-content:space-between; }
-.page-header h2 { margin:0; font-size:20px; font-weight:800; color:#f3f7ff; }
+.page-header h2 { margin:0; font-size:20px; font-weight:800; color:#0f172a; }
 .filters { display:flex; gap:12px; }
-.filters select { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:9px 14px; color:#e2eaff; font-size:13px; outline:none; cursor:pointer; }
-.filters select option { background:#0f1a2e; }
+.filters select { background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:9px 14px; color:#1e293b; font-size:13px; outline:none; cursor:pointer; }
 
 /* Read-only table */
-.tasks-table { width:100%; border-collapse:collapse; font-size:13px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:16px; overflow:hidden; }
-.tasks-table th { text-align:left; padding:12px 16px; color:rgba(200,215,255,0.5); font-weight:600; border-bottom:1px solid rgba(255,255,255,0.07); font-size:11px; text-transform:uppercase; letter-spacing:0.06em; background:rgba(255,255,255,0.02); }
-.tasks-table td { padding:13px 16px; color:#d1deff; border-bottom:1px solid rgba(255,255,255,0.04); }
+.tasks-table { width:100%; border-collapse:collapse; font-size:13px; background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+.tasks-table th { text-align:left; padding:12px 16px; color:#64748b; font-weight:600; border-bottom:1px solid #e2e8f0; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; background:#f8fafc; }
+.tasks-table td { padding:13px 16px; color:#1e293b; border-bottom:1px solid #f1f5f9; }
 .tasks-table tr:last-child td { border-bottom:none; }
-.tasks-table tr:hover td { background:rgba(255,255,255,0.03); }
-.task-name-cell { font-weight:600; color:#e2eaff; }
-.project-cell { color:rgba(200,215,255,0.6); font-size:12px; }
-.date-cell { color:rgba(200,215,255,0.4); font-size:12px; }
+.tasks-table tr:hover td { background:#f8fafc; }
+.task-name-cell { font-weight:600; color:#0f172a; }
+.project-cell { color:#475569; font-size:12px; }
+.date-cell { color:#94a3b8; font-size:12px; }
 
 .badge { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; }
-.badge.green { background:rgba(34,197,94,0.15); color:#86efac; }
-.badge.amber { background:rgba(251,191,36,0.15); color:#fde68a; }
-.badge.red { background:rgba(239,68,68,0.15); color:#fca5a5; }
-.badge.blue { background:rgba(59,130,246,0.15); color:#93c5fd; }
-.badge.gray { background:rgba(148,163,184,0.12); color:#94a3b8; }
+.badge.green { background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; }
+.badge.amber { background:#fffbeb; color:#d97706; border:1px solid #fde68a; }
+.badge.red { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
+.badge.blue { background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; }
+.badge.gray { background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; }
 
 .status-badge { display:inline-block; padding:3px 10px; border-radius:999px; font-size:10px; font-weight:600; }
-.status-badge.green { background:rgba(34,197,94,0.15); color:#86efac; }
-.status-badge.amber { background:rgba(251,191,36,0.15); color:#fde68a; }
-.status-badge.gray { background:rgba(148,163,184,0.12); color:#94a3b8; }
+.status-badge.green { background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; }
+.status-badge.amber { background:#fffbeb; color:#d97706; border:1px solid #fde68a; }
+.status-badge.gray { background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; }
 
-.loading-text, .empty-text { color:rgba(200,215,255,0.4); font-size:14px; text-align:center; padding:40px; }
+.loading-text, .empty-text { color:#94a3b8; font-size:14px; text-align:center; padding:40px; }
 </style>

@@ -1,380 +1,470 @@
 <template>
-    <div class="login-page">
-      <!-- Background -->
-      <div class="bg"></div>
-      <div class="bg-overlay"></div>
-  
-      <!-- Content -->
-      <div class="content">
-        <div class="left">
-          <div class="brand">
-            <div class="logo">VMS</div>
-            <div class="title">Vendor Management System</div>
-            <div class="subtitle">
-              Centralize your vendor operations: manage onboarding, track performance, and accelerate delivery.
-            </div>
+  <div class="login-page">
+    <div class="content">
+      <!-- Left branding panel -->
+      <div class="left">
+        <div class="brand">
+          <div class="logo">VMS</div>
+          <div class="title">Vendor Management System</div>
+          <div class="subtitle">
+            Centralize your vendor operations: manage onboarding, track performance, and accelerate delivery.
           </div>
-  
-          <ul class="bullets">
-            <li>Seamless vendor onboarding & profiling</li>
-            <li>Automated contract & SLA management</li>
-            <li>Real-time project & task tracking</li>
-            <li>Secure role-based access & detailed audit trails</li>
-          </ul>
         </div>
-  
-        <div class="right">
-          <form class="card" @submit.prevent="onSubmit">
+        <ul class="bullets">
+          <li>Seamless vendor onboarding &amp; profiling</li>
+          <li>Automated contract &amp; SLA management</li>
+          <li>Real-time project &amp; task tracking</li>
+          <li>Secure role-based access &amp; detailed audit trails</li>
+        </ul>
+      </div>
+
+      <!-- Right card — flips between Sign In and Register -->
+      <div class="right">
+        <div class="card-wrapper" :class="{ flipped: showRegister }">
+
+          <!-- ── Sign In face ── -->
+          <form class="card face-front" @submit.prevent="onSubmit">
             <div class="card-header">
               <h2>Sign in</h2>
               <p>Use your account to access the VMS portal.</p>
             </div>
-  
+
             <div class="field">
-              <label for="username">Username</label>
+              <label for="login-username">Username</label>
               <input
-                id="username"
-                v-model.trim="form.username"
+                id="login-username"
+                v-model.trim="loginForm.username"
                 type="text"
                 autocomplete="username"
                 placeholder="Enter your username"
                 required
               />
             </div>
-  
+
             <div class="field">
-              <label for="password">Password</label>
+              <label for="login-password">Password</label>
               <input
-                id="password"
-                v-model="form.password"
+                id="login-password"
+                v-model="loginForm.password"
                 type="password"
                 autocomplete="current-password"
                 placeholder="••••••••"
                 required
               />
             </div>
-  
-            <div class="row">
-              <label class="checkbox">
-                <input v-model="form.remember" type="checkbox" />
-                <span>Remember me</span>
-              </label>
-              <button class="link" type="button" @click="onForgotPassword">
-                Forgot password?
-              </button>
-            </div>
-  
-            <button class="primary" type="submit" :disabled="loading">
-              {{ loading ? "Signing in..." : "Sign in" }}
+
+            <button class="btn-primary" type="submit" :disabled="loginLoading">
+              {{ loginLoading ? "Signing in…" : "Sign in" }}
             </button>
-  
-            <div v-if="error" class="error">{{ error }}</div>
-  
+
+            <div v-if="loginError" class="alert alert-error">{{ loginError }}</div>
+
             <div class="divider"><span>or</span></div>
-  
-            <button class="secondary" type="button" @click="onRegister">
+
+            <button class="btn-secondary" type="button" @click="showRegister = true">
               Create an account
+            </button>
+          </form>
+
+          <!-- ── Register face ── -->
+          <form class="card face-back" @submit.prevent="onRegister">
+            <div class="card-header">
+              <h2>Create account</h2>
+              <p>Fill in your details to get started.</p>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="reg-firstname">First name</label>
+                <input
+                  id="reg-firstname"
+                  v-model.trim="regForm.personnelName"
+                  type="text"
+                  placeholder="Jane"
+                  required
+                />
+              </div>
+              <div class="field">
+                <label for="reg-lastname">Last name</label>
+                <input
+                  id="reg-lastname"
+                  v-model.trim="regForm.personnelSurname"
+                  type="text"
+                  placeholder="Doe"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="reg-username">Username</label>
+              <input
+                id="reg-username"
+                v-model.trim="regForm.username"
+                type="text"
+                autocomplete="username"
+                placeholder="jane_doe"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="reg-email">Email</label>
+              <input
+                id="reg-email"
+                v-model.trim="regForm.email"
+                type="email"
+                autocomplete="email"
+                placeholder="jane@company.com"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="reg-password">Password</label>
+              <input
+                id="reg-password"
+                v-model="regForm.password"
+                type="password"
+                autocomplete="new-password"
+                placeholder="Min. 8 characters"
+                required
+                minlength="8"
+              />
+            </div>
+
+            <div class="field">
+              <label for="reg-role">Role</label>
+              <select id="reg-role" v-model="regForm.userType" required>
+                <option value="" disabled>Select your role…</option>
+                <option value="PERSONNEL">Developer (Personnel)</option>
+                <option value="VENDOR_ADMIN">Vendor Admin</option>
+                <option value="MANAGER">Product Manager</option>
+              </select>
+            </div>
+
+            <button class="btn-primary" type="submit" :disabled="regLoading">
+              {{ regLoading ? "Creating account…" : "Create account" }}
+            </button>
+
+            <div v-if="regError" class="alert alert-error">{{ regError }}</div>
+            <div v-if="regSuccess" class="alert alert-success">{{ regSuccess }}</div>
+
+            <div class="divider"><span>or</span></div>
+
+            <button class="btn-secondary" type="button" @click="showRegister = false">
+              Back to Sign in
             </button>
           </form>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script setup lang="ts">
-  import { reactive, ref } from "vue";
-  import { useRouter } from "vue-router";
-  import { login } from "../services/authService.js";
+  </div>
+</template>
 
-  const loading = ref(false);
-  const error = ref<string | null>(null);
-  const router = useRouter();
+<script setup>
+import { reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { login, register } from "../services/authService.js";
 
-  const form = reactive({
-    username: "",
-    password: "",
-    remember: true,
-    rememberMe: true,
-  });
+const router  = useRouter();
+const showRegister = ref(false);
+
+// ── Login state ──────────────────────────────────────────────
+const loginLoading = ref(false);
+const loginError   = ref(null);
+const loginForm = reactive({ username: "", password: "" });
 
 async function onSubmit() {
-  error.value = null;
-
-  if (!form.username || !form.password) {
-    error.value = "Please enter your username and password.";
+  loginError.value = null;
+  if (!loginForm.username || !loginForm.password) {
+    loginError.value = "Please enter your username and password.";
     return;
   }
-
-  loading.value = true;
+  loginLoading.value = true;
   try {
-    const user = await login({ username: form.username, password: form.password, rememberMe: form.rememberMe });
-    if (user.userType === "MANAGER") {
-      await router.push("/pm/dashboard");
-    } else if (user.userType === "VENDOR_ADMIN") {
-      await router.push("/vendor/dashboard");
-    } else {
-      await router.push("/personnel");
-    }
-  } catch (e: any) {
-    error.value =
-      e?.response?.data?.message ??
-      e?.message ??
-      "Login failed. Check your credentials.";
+    const user = await login({ username: loginForm.username, password: loginForm.password });
+    if (user.userType === "MANAGER")      await router.push("/pm/dashboard");
+    else if (user.userType === "VENDOR_ADMIN") await router.push("/vendor/dashboard");
+    else                                  await router.push("/personnel");
+  } catch (e) {
+    loginError.value =
+      e?.response?.data?.message ?? e?.message ?? "Login failed. Check your credentials.";
   } finally {
-    loading.value = false;
+    loginLoading.value = false;
   }
 }
 
-  function onForgotPassword() {
-    alert("Forgot password (stub).");
-  }
+// ── Register state ───────────────────────────────────────────
+const regLoading = ref(false);
+const regError   = ref(null);
+const regSuccess = ref(null);
+const regForm = reactive({
+  username: "",
+  email: "",
+  password: "",
+  personnelName: "",
+  personnelSurname: "",
+  userType: "",
+});
 
-  function onRegister() {
-    alert("Register (stub).");
+async function onRegister() {
+  regError.value   = null;
+  regSuccess.value = null;
+  regLoading.value = true;
+  try {
+    const user = await register({ ...regForm });
+    regSuccess.value = `Account created! Welcome, ${user.personnelName ?? regForm.username}.`;
+    // Auto-navigate after a short delay
+    setTimeout(async () => {
+      if (user.userType === "MANAGER")           await router.push("/pm/dashboard");
+      else if (user.userType === "VENDOR_ADMIN") await router.push("/vendor/dashboard");
+      else                                       await router.push("/personnel");
+    }, 1000);
+  } catch (e) {
+    regError.value =
+      e?.response?.data?.message ?? e?.message ?? "Registration failed. Please try again.";
+  } finally {
+    regLoading.value = false;
   }
-  </script>
-  
-  <style scoped>
-  .login-page {
-    min-height: 100vh;
-    position: relative;
-    overflow: hidden;
-    color: #eaf1ff;
-    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans";
-  }
-  
-  /* Background image */
-  .bg {
-    position: absolute;
-    inset: 0;
-    background-image: url("../assets/VMS-Theme.png");
-    background-size: cover;
-    background-position: center;
-    transform: scale(1.03);
-    filter: blur(0px);
-  }
-  
-  /* Dark overlay for readability */
-  .bg-overlay {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(1200px circle at 25% 20%, rgba(12, 28, 56, 0.35), transparent 55%),
-      linear-gradient(90deg, rgba(6, 12, 24, 0.85), rgba(6, 12, 24, 0.35));
-  }
-  
-  /* Layout */
+}
+</script>
+
+<style scoped>
+/* ── Page layout ─────────────────────────────────────────────── */
+.login-page {
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.content {
+  width: 100%;
+  max-width: 1040px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
   .content {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 48px;
-    padding: 56px clamp(20px, 5vw, 72px);
-    align-items: center;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    max-width: 480px;
   }
-  
-  .left .brand .logo {
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
-    display: grid;
-    place-items: center;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    background: rgba(255, 255, 255, 0.10);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-  }
-  
-  .title {
-    margin-top: 16px;
-    font-size: 40px;
-    line-height: 1.1;
-    font-weight: 800;
-    color: #f3f7ff;
-  }
-  
-  .subtitle {
-    margin-top: 14px;
-    max-width: 520px;
-    color: rgba(234, 241, 255, 0.85);
-    font-size: 16px;
-    line-height: 1.6;
-  }
-  
-  .bullets {
-    margin-top: 22px;
-    padding-left: 18px;
-    color: rgba(234, 241, 255, 0.78);
-  }
-  
-  .bullets li {
-    margin: 10px 0;
-  }
-  
-  /* Card */
-  .right {
-    display: grid;
-    justify-items: end;
-  }
-  
-  .card {
-    width: min(420px, 100%);
-    border-radius: 20px;
-    padding: 26px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    backdrop-filter: blur(16px);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-  }
-  
-  .card-header h2 {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 800;
-    color: #f7faff;
-  }
-  
-  .card-header p {
-    margin: 6px 0 0;
-    color: rgba(234, 241, 255, 0.75);
-    font-size: 14px;
-  }
-  
-  .field {
-    margin-top: 16px;
-  }
-  
-  label {
-    display: block;
-    font-size: 13px;
-    color: rgba(234, 241, 255, 0.78);
-    margin-bottom: 8px;
-  }
-  
-  input {
-    width: 100%;
-    border-radius: 14px;
-    padding: 12px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(5, 10, 20, 0.35);
-    color: #f3f7ff;
-    outline: none;
-  }
-  
-  input::placeholder {
-    color: rgba(234, 241, 255, 0.40);
-  }
-  
-  input:focus {
-    border-color: rgba(120, 170, 255, 0.55);
-    box-shadow: 0 0 0 3px rgba(80, 140, 255, 0.18);
-  }
-  
-  .row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 12px;
-  }
-  
-  .checkbox {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    user-select: none;
-  }
-  
-  .checkbox input {
-    width: 16px;
-    height: 16px;
-    margin: 0;
-  }
-  
-  .link {
-    background: transparent;
-    border: none;
-    color: rgba(170, 205, 255, 0.95);
-    cursor: pointer;
-    padding: 0;
-    font-size: 13px;
-  }
-  
-  .primary {
-    margin-top: 16px;
-    width: 100%;
-    border: none;
-    border-radius: 14px;
-    padding: 12px 14px;
-    font-weight: 700;
-    cursor: pointer;
-    color: #071326;
-    background: rgba(200, 225, 255, 0.95);
-  }
-  
-  .primary:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
-  }
-  
-  .secondary {
-    width: 100%;
-    border-radius: 14px;
-    padding: 12px 14px;
-    font-weight: 700;
-    cursor: pointer;
-    background: rgba(255, 255, 255, 0.10);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    color: #f3f7ff;
-  }
-  
-  .error {
-    margin-top: 12px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    background: rgba(255, 90, 90, 0.12);
-    border: 1px solid rgba(255, 90, 90, 0.25);
-    color: rgba(255, 200, 200, 0.95);
-    font-size: 13px;
-  }
-  
-  .divider {
-    margin: 18px 0;
-    display: grid;
-    place-items: center;
-    position: relative;
-    color: rgba(234, 241, 255, 0.55);
-    font-size: 12px;
-  }
-  
-  .divider::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.15);
-  }
-  
-  .divider span {
-    position: relative;
-    padding: 0 10px;
-    background: rgba(10, 16, 28, 0.35);
-    border-radius: 999px;
-  }
-  
-  /* Responsive */
-  @media (max-width: 980px) {
-    .content {
-      grid-template-columns: 1fr;
-      gap: 24px;
-      padding: 36px 18px;
-    }
-    .right {
-      justify-items: stretch;
-    }
-  }
-  </style>
+  .left { display: none; }
+}
+
+/* ── Left branding ───────────────────────────────────────────── */
+.left .brand .logo {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: 0.05em;
+  background: var(--brand-primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.title {
+  margin-top: 24px;
+  font-size: 2.5rem;
+  line-height: 1.1;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin-top: 16px;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.bullets {
+  margin-top: 32px;
+  padding-left: 20px;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+}
+.bullets li { margin: 12px 0; }
+
+/* ── Card flip ───────────────────────────────────────────────── */
+.right {
+  perspective: 1200px;
+}
+
+.card-wrapper {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.45, 0, 0.15, 1);
+}
+
+.card-wrapper.flipped {
+  transform: rotateY(180deg);
+}
+
+.card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-md);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.face-front {
+  position: relative;
+  z-index: 2;
+}
+
+.face-back {
+  position: absolute;
+  inset: 0;
+  height: max-content;
+  transform: rotateY(180deg);
+}
+
+/* ── Card internals ──────────────────────────────────────────── */
+.card-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.card-header p {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.field {
+  margin-top: 18px;
+  flex: 1;
+}
+
+.field-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 0;
+}
+
+label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+select {
+  width: 100%;
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='%236b7280'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+input::placeholder { color: var(--text-tertiary); }
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.btn-primary {
+  margin-top: 22px;
+  width: 100%;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 12px;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  background: var(--brand-primary);
+  color: white;
+  transition: background-color 0.2s ease;
+}
+.btn-primary:hover:not(:disabled) { background: var(--brand-primary-hover); }
+.btn-primary:disabled { opacity: 0.65; cursor: not-allowed; }
+
+.btn-secondary {
+  width: 100%;
+  border-radius: var(--radius-md);
+  padding: 12px;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease;
+}
+.btn-secondary:hover { background: var(--bg-surface-hover); }
+
+/* ── Alerts ──────────────────────────────────────────────────── */
+.alert {
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+}
+
+.alert-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: var(--brand-danger);
+}
+
+.alert-success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+/* ── Divider ─────────────────────────────────────────────────── */
+.divider {
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+}
+.divider::before, .divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+}
+.divider span { padding: 0 16px; }
+</style>

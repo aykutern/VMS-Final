@@ -2,10 +2,10 @@
 FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
 
-# Copy Maven wrapper and pom first for layer caching
+# Copy Maven wrapper and pom for build
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
-RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
+RUN chmod +x mvnw
 
 # Copy source and build
 COPY src/ src/
