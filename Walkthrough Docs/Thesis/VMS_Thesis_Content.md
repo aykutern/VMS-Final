@@ -1,3 +1,18 @@
+# ABBREVIATIONS
+
+*   **API**: Application Programming Interface
+*   **DTO**: Data Transfer Object
+*   **IoC**: Inversion of Control
+*   **IT**: Information Technology
+*   **JPA**: Java Persistence API
+*   **MVC**: Model-View-Controller
+*   **ORM**: Object-Relational Mapping
+*   **PM**: Project Manager
+*   **REST**: Representational State Transfer
+*   **SPA**: Single Page Application
+*   **UI / UX**: User Interface / User Experience
+*   **VMS**: Vendor Management System
+
 # 1. INTRODUCTION
 
 ## 1.1 Project Background
@@ -107,3 +122,14 @@ While the current iteration of VMS offers a complete end-to-end framework, futur
 *   **Automated Code Review AI:** Future iterations could connect the task `IN_REVIEW` status directly to Git repositories. Large Language Models could perform initial, automated code structure analyses before the task even reaches the human Vendor Admin's review dashboard. 
 
 *(Note to student: After copying formatting over to your Word document, explicitly use ¶ to verify the 0.5cm indentations on all paragraphs, and replace my bracketed screenshot tags with the images from your system as required by the Thesis formatting rules).*
+
+# 7. REFERENCES
+
+1.  Beck, K., et al. (2001). *Manifesto for Agile Software Development*. Agile Alliance.
+2.  Fielding, R. T. (2000). *Architectural styles and the design of network-based software architectures*. University of California, Irvine.
+3.  Lacity, M. C., & Willcocks, L. P. (1998). An empirical investigation of information technology sourcing practices. *MIS quarterly*, 363-408.
+4.  Momjian, B. (2001). *PostgreSQL: Introduction and Concepts*. Addison-Wesley.
+5.  Schwaber, K., & Sutherland, J. (2020). *The Scrum Guide*. Scrum.org.
+6.  Turnbull, J. (2014). *The Docker Book: Containerization is the new virtualization*.
+7.  Walls, C. (2015). *Spring Boot in Action*. Manning Publications.
+8.  You, E. (2014). *Vue.js Core Framework*. Vue Technology LLC.
