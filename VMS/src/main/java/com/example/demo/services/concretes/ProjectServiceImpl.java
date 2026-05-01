@@ -4,10 +4,10 @@ import com.example.demo.dto.request.CreateProjectRequest;
 import com.example.demo.dto.request.UpdateProjectRequest;
 import com.example.demo.dto.response.ProjectResponse;
 import com.example.demo.entities.concretes.Project;
+import com.example.demo.entities.concretes.ProductManager;
 import com.example.demo.entities.concretes.Vendor;
-import com.example.demo.entities.concretes.Users;
+import com.example.demo.repositories.ProductManagerRepository;
 import com.example.demo.repositories.ProjectRepository;
-import com.example.demo.repositories.UserRepository;
 import com.example.demo.repositories.VendorRepository;
 import com.example.demo.services.abstracts.ProjectService;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,7 +22,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectRepository projectRepository;
     private final VendorRepository vendorRepository;
-    private final UserRepository userRepository;
+    private final ProductManagerRepository productManagerRepository;
 
     private static final int ACTIVE = 1;
     private static final int DELETED = 0;
@@ -39,9 +39,9 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         if (request.getProjectManagerId() != null) {
-            Users pm = userRepository.findById(request.getProjectManagerId())
+            ProductManager pm = productManagerRepository.findById(request.getProjectManagerId())
                     .orElseThrow(() -> new EntityNotFoundException(
-                            "User not found: " + request.getProjectManagerId()));
+                            "ProductManager not found: " + request.getProjectManagerId()));
             project.setProjectManager(pm);
         }
 
@@ -91,9 +91,9 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         if (request.getProjectManagerId() != null) {
-            Users pm = userRepository.findById(request.getProjectManagerId())
+            ProductManager pm = productManagerRepository.findById(request.getProjectManagerId())
                     .orElseThrow(() -> new EntityNotFoundException(
-                            "User not found: " + request.getProjectManagerId()));
+                            "ProductManager not found: " + request.getProjectManagerId()));
             project.setProjectManager(pm);
         } else {
             project.setProjectManager(null);
@@ -125,9 +125,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (project.getProjectManager() != null) {
             response.setProjectManagerId(project.getProjectManager().getId());
-            response.setProjectManagerName(
-                    project.getProjectManager().getPersonnelName() + " " +
-                            project.getProjectManager().getPersonnelSurname());
+            response.setProjectManagerName(project.getProjectManager().getName());
         }
 
         response.setCreatedAt(project.getCreatedAt());
