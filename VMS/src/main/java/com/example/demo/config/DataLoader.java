@@ -55,13 +55,13 @@ public class DataLoader implements CommandLineRunner {
                 pm1.setName("Alice Johnson");
                 pm1.setTitle(PersonnelTitle.MANAGER);
                 pm1.setIsActive(1);
-                productManagerRepository.save(pm1);
+                pm1 = productManagerRepository.save(pm1);
 
                 ProductManager pm2 = new ProductManager();
                 pm2.setName("Bob Williams");
                 pm2.setTitle(PersonnelTitle.PRODUCT_OWNER);
                 pm2.setIsActive(1);
-                productManagerRepository.save(pm2);
+                pm2 = productManagerRepository.save(pm2);
 
                 // ── Users ─────────────────────────────────────────────────────────────
 
@@ -262,21 +262,21 @@ public class DataLoader implements CommandLineRunner {
                 Project projectA = new Project();
                 projectA.setProjectName("E-Commerce Platform Redesign");
                 projectA.setVendor(techCorp);
-                projectA.setProjectManager(pmUser);
+                projectA.setProjectManager(pm1);
                 projectA.setIsActive(1);
                 projectA = projectRepository.save(projectA);
 
                 Project projectB = new Project();
                 projectB.setProjectName("HR Management System");
                 projectB.setVendor(softSolutions);
-                projectB.setProjectManager(pmUser);
+                projectB.setProjectManager(pm1);
                 projectB.setIsActive(1);
                 projectB = projectRepository.save(projectB);
 
                 Project projectC = new Project();
                 projectC.setProjectName("Mobile Analytics Dashboard");
                 projectC.setVendor(innovaLabs);
-                projectC.setProjectManager(pmUser);
+                projectC.setProjectManager(pm2);
                 projectC.setIsActive(1);
                 projectC = projectRepository.save(projectC);
 

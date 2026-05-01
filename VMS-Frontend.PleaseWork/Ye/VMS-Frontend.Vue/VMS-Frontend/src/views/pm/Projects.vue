@@ -45,6 +45,13 @@
             <option v-for="v in vendors" :key="v.id" :value="v.id">{{ v.vendorName }}</option>
           </select>
         </div>
+        <div class="form-group">
+          <label>Project Manager</label>
+          <select v-model="form.projectManagerId">
+            <option value="">— Select project manager —</option>
+            <option v-for="pm in productManagers" :key="pm.id" :value="pm.id">{{ pm.name }}</option>
+          </select>
+        </div>
         <div class="modal-actions">
           <button class="secondary-btn" @click="showModal = false">Cancel</button>
           <button class="primary-btn" @click="createProject" :disabled="saving">
@@ -60,23 +67,27 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { http } from "../../lib/http.js";
-import { getCurrentUser } from "../../services/authService.js";
 
 const projects = ref([]);
 const vendors = ref([]);
+const productManagers = ref([]);
 const loading = ref(true);
 const showModal = ref(false);
 const saving = ref(false);
 const formError = ref(null);
-const user = getCurrentUser();
 
-const form = ref({ projectName: "", vendorId: "" });
+const form = ref({ projectName: "", vendorId: "", projectManagerId: "" });
 
 onMounted(async () => {
   try {
-    const [pRes, vRes] = await Promise.all([http.get("/api/projects"), http.get("/api/vendors")]);
+    const [pRes, vRes, pmRes] = await Promise.all([
+      http.get("/api/projects"),
+      http.get("/api/vendors"),
+      http.get("/api/product-managers"),
+    ]);
     projects.value = pRes.data;
     vendors.value = vRes.data;
+    productManagers.value = pmRes.data;
   } catch (e) {
     console.error(e);
   } finally {
@@ -92,12 +103,12 @@ async function createProject() {
     await http.post("/api/projects", {
       projectName: form.value.projectName,
       vendorId: form.value.vendorId || null,
-      projectManagerId: user?.id,
+      projectManagerId: form.value.projectManagerId || null,
     });
     const res = await http.get("/api/projects");
     projects.value = res.data;
     showModal.value = false;
-    form.value = { projectName: "", vendorId: "" };
+    form.value = { projectName: "", vendorId: "", projectManagerId: "" };
   } catch (e) {
     formError.value = e?.response?.data?.message ?? "Failed to create project.";
   } finally {

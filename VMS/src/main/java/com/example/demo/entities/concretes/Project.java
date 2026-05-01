@@ -28,7 +28,7 @@ public class Project extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_manager_id")
-    private Users projectManager;
+    private ProductManager projectManager;
 
     @OneToMany(mappedBy = "project")
     private List<Announcement> announcements;
