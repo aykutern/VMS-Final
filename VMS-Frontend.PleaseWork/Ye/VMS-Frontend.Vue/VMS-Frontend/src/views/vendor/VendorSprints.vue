@@ -28,21 +28,27 @@
         </div>
         <div class="sprint-goal" v-if="s.goal">{{ s.goal }}</div>
 
-        <!-- Member avatars -->
-        <div v-if="s.members && s.members.length > 0" class="members-row">
-          <span v-for="m in s.members" :key="m.id" class="member-chip" :title="m.fullName">
-            {{ initials(m.fullName) }}
-          </span>
-        </div>
-        <div v-else class="members-empty">No developers assigned</div>
-
-        <!-- Capacity bar -->
-        <div class="capacity-bar-wrap" v-if="s.maxCapacity">
-          <div class="capacity-label">{{ s.currentLoad || 0 }} / {{ s.maxCapacity }} pts</div>
-          <div class="capacity-bar">
-            <div class="capacity-fill" :style="{ width: Math.min(100, ((s.currentLoad || 0) / s.maxCapacity) * 100) + '%' }"></div>
+        <!-- Per-developer capacity rows -->
+        <div v-if="s.members && s.members.length > 0" class="member-loads">
+          <div
+            v-for="m in s.members"
+            :key="m.id"
+            class="member-load-row"
+            :title="`${m.fullName}: ${m.loadPoints || 0} / ${s.maxCapacity} pts`"
+          >
+            <span class="member-chip">{{ initials(m.fullName) }}</span>
+            <span class="member-load-name">{{ m.fullName }}</span>
+            <div class="capacity-bar capacity-bar-mini">
+              <div
+                class="capacity-fill"
+                :class="{ 'over-capacity': (m.loadPoints || 0) > s.maxCapacity }"
+                :style="{ width: Math.min(100, ((m.loadPoints || 0) / (s.maxCapacity || 10)) * 100) + '%' }"
+              ></div>
+            </div>
+            <span class="member-load-label">{{ m.loadPoints || 0 }}/{{ s.maxCapacity }}</span>
           </div>
         </div>
+        <div v-else class="members-empty">No developers assigned</div>
 
         <div class="sprint-dates">{{ s.startDate }} → {{ s.endDate }}</div>
         <div class="dbl-hint">Double-click for details</div>
@@ -148,11 +154,25 @@
         </div>
         <div class="detail-goal" v-if="detailSprint.goal">{{ detailSprint.goal }}</div>
 
-        <!-- Members -->
+        <!-- Members with per-developer capacity -->
         <div class="detail-section" v-if="detailSprint.members && detailSprint.members.length">
-          <div class="detail-section-title">Team ({{ detailSprint.members.length }})</div>
-          <div class="member-chips">
-            <span v-for="m in detailSprint.members" :key="m.id" class="member-chip-lg">{{ m.fullName }}</span>
+          <div class="detail-section-title">
+            Team ({{ detailSprint.members.length }})
+            <span class="cap-hint">cap: {{ detailSprint.maxCapacity }} pts per developer</span>
+          </div>
+          <div class="member-load-list">
+            <div v-for="m in detailSprint.members" :key="m.id" class="member-load-row detail">
+              <span class="member-chip">{{ initials(m.fullName) }}</span>
+              <span class="member-load-name">{{ m.fullName }}</span>
+              <div class="capacity-bar capacity-bar-mini">
+                <div
+                  class="capacity-fill"
+                  :class="{ 'over-capacity': (m.loadPoints || 0) > detailSprint.maxCapacity }"
+                  :style="{ width: Math.min(100, ((m.loadPoints || 0) / (detailSprint.maxCapacity || 10)) * 100) + '%' }"
+                ></div>
+              </div>
+              <span class="member-load-label">{{ m.loadPoints || 0 }}/{{ detailSprint.maxCapacity }}</span>
+            </div>
           </div>
         </div>
 
@@ -367,8 +387,7 @@ async function fetchSprints() {
 .sprint-dates { font-size:12px; color:#94a3b8; font-weight:500; }
 .dbl-hint { position:absolute; bottom:8px; right:12px; font-size:10px; color:#cbd5e1; }
 
-/* ── Member avatars on card ───────────────────────── */
-.members-row { display:flex; flex-wrap:wrap; gap:6px; }
+/* ── Member avatar chip ───────────────────────────── */
 .member-chip {
   width:28px; height:28px; border-radius:50%;
   background:linear-gradient(135deg,#6366f1,#a855f7);
@@ -387,7 +406,18 @@ async function fetchSprints() {
 .capacity-bar-wrap { display:flex; align-items:center; gap:8px; }
 .capacity-label { font-size:11px; font-weight:600; color:#64748b; white-space:nowrap; }
 .capacity-bar { flex:1; height:6px; background:#e2e8f0; border-radius:999px; overflow:hidden; }
+.capacity-bar-mini { height:5px; }
 .capacity-fill { height:100%; background:linear-gradient(90deg,#6366f1,#a855f7); border-radius:999px; transition:width 0.3s; }
+.capacity-fill.over-capacity { background:linear-gradient(90deg,#dc2626,#f97316); }
+
+/* ── Per-Developer Capacity Rows ─────────────────── */
+.member-loads { display:flex; flex-direction:column; gap:8px; }
+.member-load-list { display:flex; flex-direction:column; gap:10px; }
+.member-load-row { display:flex; align-items:center; gap:10px; }
+.member-load-row.detail { padding:6px 0; }
+.member-load-name { font-size:12px; color:#0f172a; font-weight:500; flex:0 1 35%; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.member-load-label { font-size:11px; font-weight:600; color:#64748b; white-space:nowrap; min-width:42px; text-align:right; }
+.cap-hint { font-size:10px; color:#94a3b8; font-weight:500; text-transform:none; letter-spacing:0; margin-left:8px; }
 
 /* ── Modal Backdrop ───────────────────────────────── */
 .modal-backdrop {
@@ -497,13 +527,6 @@ async function fetchSprints() {
 .detail-section-title {
   font-size:12px; font-weight:700; color:#94a3b8;
   text-transform:uppercase; letter-spacing:0.08em; margin-bottom:12px;
-}
-
-.member-chips { display:flex; flex-wrap:wrap; gap:8px; }
-.member-chip-lg {
-  padding:4px 12px;
-  background:#ede9fe; border:1px solid #ddd6fe;
-  border-radius:999px; font-size:12px; color:#7c3aed; font-weight:500;
 }
 
 /* ── Tasks Table ──────────────────────────────────── */

@@ -163,18 +163,27 @@ public class SprintServiceImpl implements SprintService {
         response.setStatus(sprint.getStatus());
         response.setMaxCapacity(sprint.getMaxCapacity());
 
-        // Compute current load (sum of task ranks in this sprint)
+        // Compute total load across all members (sum of task ranks in this sprint).
+        // Kept for backwards compatibility with sprint-wide displays; the per-developer
+        // cap is enforced and rendered through MemberDto.loadPoints below.
         int currentLoad = assignmentRepository.findBySprint_IdAndIsActive(sprint.getId(), ACTIVE)
                 .stream().mapToInt(a -> a.getRank() != null ? a.getRank() : 1).sum();
         response.setCurrentLoad(currentLoad);
 
-        // Map members
+        // Map members and attach each developer's per-sprint point load so the
+        // frontend can render a capacity bar per developer (load / maxCapacity).
         if (sprint.getMembers() != null) {
             response.setMembers(sprint.getMembers().stream()
-                .map(u -> new SprintResponse.MemberDto(
-                    u.getId(),
-                    u.getPersonnelName() + " " + u.getPersonnelSurname()
-                ))
+                .map(u -> {
+                    int memberLoad = assignmentRepository
+                            .findBySprint_IdAndAssignee_IdAndIsActive(sprint.getId(), u.getId(), ACTIVE)
+                            .stream().mapToInt(a -> a.getRank() != null ? a.getRank() : 1).sum();
+                    return new SprintResponse.MemberDto(
+                        u.getId(),
+                        u.getPersonnelName() + " " + u.getPersonnelSurname(),
+                        memberLoad
+                    );
+                })
                 .collect(Collectors.toList()));
         }
 

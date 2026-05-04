@@ -50,15 +50,23 @@ public class AssignmentServiceImpl implements AssignmentService {
             Sprint sprint = sprintRepository.findById(request.getSprintId())
                     .orElseThrow(() -> new EntityNotFoundException("Sprint not found: " + request.getSprintId()));
 
-            // Validate sprint capacity
-            int currentLoad = assignmentRepository.findBySprint_IdAndIsActive(sprint.getId(), ACTIVE)
-                    .stream().mapToInt(t -> t.getRank() != null ? t.getRank() : 1).sum();
+            // Per-developer capacity validation:
+            // The total point load assigned to a single developer within a single
+            // sprint may not exceed sprint.maxCapacity (default 10). The cap is
+            // only enforced when an assignee is provided, since unassigned tasks
+            // do not consume any developer's capacity.
+            Integer assigneeId = request.getAssigneeId();
             int newRank = request.getRank() != null ? request.getRank() : 1;
-            if (currentLoad + newRank > sprint.getMaxCapacity()) {
-                throw new IllegalArgumentException(
-                    "Sprint capacity exceeded. Current load: " + currentLoad
-                    + ", task rank: " + newRank
-                    + ", max capacity: " + sprint.getMaxCapacity());
+            if (assigneeId != null) {
+                int currentLoad = assignmentRepository
+                        .findBySprint_IdAndAssignee_IdAndIsActive(sprint.getId(), assigneeId, ACTIVE)
+                        .stream().mapToInt(t -> t.getRank() != null ? t.getRank() : 1).sum();
+                if (currentLoad + newRank > sprint.getMaxCapacity()) {
+                    throw new IllegalArgumentException(
+                        "Developer capacity exceeded for this sprint. Current load: " + currentLoad
+                        + ", task rank: " + newRank
+                        + ", max capacity per developer: " + sprint.getMaxCapacity());
+                }
             }
 
             a.setSprint(sprint);

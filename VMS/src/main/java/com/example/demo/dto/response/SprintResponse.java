@@ -41,10 +41,18 @@ public class SprintResponse {
     public static class MemberDto {
         private Integer id;
         private String fullName;
+        /** Sum of ranks of this member's active assignments in this sprint. */
+        private Integer loadPoints;
 
         public MemberDto(Integer id, String fullName) {
             this.id = id;
             this.fullName = fullName;
+        }
+
+        public MemberDto(Integer id, String fullName, Integer loadPoints) {
+            this.id = id;
+            this.fullName = fullName;
+            this.loadPoints = loadPoints;
         }
     }
 }
