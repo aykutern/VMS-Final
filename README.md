@@ -499,6 +499,9 @@ Tasks follow a review pipeline: developers move tasks to `IN_REVIEW`, and only *
 ## Roadmap
 
 - [ ] JWT token-based authentication
+- [ ] Subscription plans with Stripe-powered billing and payment processing
+- [ ] In-app messaging system for direct communication between users
+- [ ] Expanded personnel roles beyond developer (QA, designer, DevOps, etc.)
 - [ ] WebSocket notifications for real-time task updates
 - [ ] File attachment support for assignments
 - [ ] Sprint retrospective and burndown charts
