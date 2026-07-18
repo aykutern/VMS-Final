@@ -26,3 +26,17 @@ Thumbs.db
 
 # ===== Private project / thesis material (do not publish) =====
 Walkthrough Docs/
+
+# ===== Logs and temporary files =====
+backend_logs.txt
+logs_utf8.txt
+**/build_error*.txt
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.iml
+
+# ===== Environment files (secrets) =====
+.env
+*.env
