@@ -1,6 +1,6 @@
-<![CDATA[<div align="center">
+<div align="center">
 
-# 🏗️ VMS — Vendor Management System
+# VMS — Vendor Management System
 
 **A full-stack, role-based project management platform for coordinating vendor teams, sprint workflows, and task delivery at scale.**
 
@@ -19,26 +19,25 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Overview](#-overview)
-- [Key Features](#-key-features)
-- [Architecture](#-architecture)
-- [Tech Stack](#-tech-stack)
-- [Entity-Relationship Model](#-entity-relationship-model)
-- [API Endpoints](#-api-endpoints)
-- [Role-Based Access](#-role-based-access)
-- [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
-- [Environment Variables](#-environment-variables)
-- [Screenshots](#-screenshots)
-- [Engineering Decisions](#-engineering-decisions)
-- [Roadmap](#-roadmap)
-- [License](#-license)
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Entity-Relationship Model](#entity-relationship-model)
+- [API Endpoints](#api-endpoints)
+- [Role-Based Access](#role-based-access)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [Engineering Decisions](#engineering-decisions)
+- [Roadmap](#roadmap)
+- [License](#license)
 
 ---
 
-## 🎯 Overview
+## Overview
 
 VMS is an **enterprise-grade Vendor Management System** designed to solve a real-world coordination problem: how do organizations manage multiple external vendor teams, track sprint progress, and maintain visibility over task delivery — all within a single, unified platform?
 
@@ -55,94 +54,94 @@ VMS bridges these gaps with role-aware dashboards, enforced capacity constraints
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 🔐 Authentication & Authorization
+### Authentication & Authorization
 - Session-based authentication with **BCrypt** password hashing
 - Role-based route protection with **Vue Router navigation guards**
 - Three user roles: `MANAGER`, `VENDOR_ADMIN`, `PERSONNEL`
 - "Remember Me" persistent login via `localStorage`
 
-### 📊 Role-Specific Dashboards
+### Role-Specific Dashboards
 - **Product Manager**: Aggregated task statistics (pie chart), vendor performance comparison, project/sprint overview
 - **Vendor Admin**: Team performance metrics, employee-level analytics, sprint capacity visualization
 - **Personnel**: Personal task summary with status breakdown and sprint deadline countdown
 
-### 🗂️ Sprint Management
+### Sprint Management
 - Full CRUD with **2-week auto-calculated sprint duration**
 - **One active sprint per developer** constraint — prevents overcommitment
 - Sprint lifecycle: `PLANNED` → `ACTIVE` → `COMPLETED`
 - Member assignment with per-developer **capacity tracking** (10 story points max)
 
-### ✅ Task / Assignment Management
+### Task / Assignment Management
 - Kanban-style task board with **drag-and-drop** status transitions
 - Task states: `TODO` → `IN_PROGRESS` → `IN_REVIEW` → `COMPLETED`
 - **Priority levels**: `LOW`, `MEDIUM`, `HIGH`, `OPTIONAL`
-- **Difficulty ranking** (1–5 story points) with sprint capacity enforcement
+- **Difficulty ranking** (1-5 story points) with sprint capacity enforcement
 - **Task review workflow**: Vendor Admins approve/reject tasks with rejection reasons
 
-### 📈 Performance Analytics
+### Performance Analytics
 - **Vendor-level**: Completed tasks/sprints, total vs. completed story points
 - **Employee-level**: Task completion rate, average completion time (business days), point throughput
 - Chart.js-powered visualizations (pie charts, progress bars)
 
-### 📢 Announcement System
+### Announcement System
 - Project-scoped announcements for team-wide communication
 - Full audit trail with `createdBy` / `updatedBy` tracking
 
-### 🔍 Audit Trail & Soft Deletes
+### Audit Trail & Soft Deletes
 - `BaseEntity` superclass with automatic `createdAt`, `updatedAt`, `createdBy`, `updatedBy` via **Spring Data JPA Auditing**
 - **Soft-delete pattern** — records are marked inactive (`isActive = 0`) rather than physically removed
 - Custom `X-User` HTTP header for request-level auditing
 
 ---
 
-## 🏛️ Architecture
+## Architecture
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                        DOCKER COMPOSE                            │
-│                                                                  │
-│  ┌─────────────┐    ┌──────────────────┐    ┌────────────────┐  │
-│  │   Frontend   │    │     Backend      │    │   PostgreSQL   │  │
-│  │  Vue 3 +     │───▶│  Spring Boot 4   │───▶│    17-alpine   │  │
-│  │  Nginx       │    │  REST API        │    │                │  │
-│  │  :5173/80    │    │  :8081           │    │  :5432         │  │
-│  └─────────────┘    └──────────────────┘    └────────────────┘  │
-│        │                     │                                   │
-│   SPA + API Proxy      Swagger UI                                │
-│   (nginx reverse       /swagger-ui.html                          │
-│    proxy for /api/)                                              │
-└──────────────────────────────────────────────────────────────────┘
++------------------------------------------------------------------+
+|                        DOCKER COMPOSE                            |
+|                                                                  |
+|  +-------------+    +------------------+    +----------------+   |
+|  |   Frontend   |    |     Backend      |    |   PostgreSQL   |   |
+|  |  Vue 3 +     |--->|  Spring Boot 4   |--->|    17-alpine   |   |
+|  |  Nginx       |    |  REST API        |    |                |   |
+|  |  :5173/80    |    |  :8081           |    |  :5432         |   |
+|  +-------------+    +------------------+    +----------------+   |
+|        |                     |                                    |
+|   SPA + API Proxy      Swagger UI                                |
+|   (nginx reverse       /swagger-ui.html                          |
+|    proxy for /api/)                                              |
++------------------------------------------------------------------+
 ```
 
 ### Backend Architecture (Layered)
 
 ```
-Controller Layer        →  REST endpoints, request validation, Swagger docs
-    ↓
-Service Layer           →  Business logic, transaction management, domain rules
-    ↓
-Repository Layer        →  Spring Data JPA, derived queries, custom JPQL
-    ↓
-Entity Layer            →  JPA entities with inheritance (BaseEntity), enums
+Controller Layer        ->  REST endpoints, request validation, Swagger docs
+    |
+Service Layer           ->  Business logic, transaction management, domain rules
+    |
+Repository Layer        ->  Spring Data JPA, derived queries, custom JPQL
+    |
+Entity Layer            ->  JPA entities with inheritance (BaseEntity), enums
 ```
 
 ### Frontend Architecture (Component-Based)
 
 ```
-Router (vue-router)     →  Route guards, role-based redirection
-    ↓
-Views                   →  Page-level components (PM, Vendor, Personnel)
-    ↓
-Components              →  Reusable UI: Sidebar, TopBar, AppLayout
-    ↓
-Services                →  Axios HTTP client, auth state management
+Router (vue-router)     ->  Route guards, role-based redirection
+    |
+Views                   ->  Page-level components (PM, Vendor, Personnel)
+    |
+Components              ->  Reusable UI: Sidebar, TopBar, AppLayout
+    |
+Services                ->  Axios HTTP client, auth state management
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
@@ -164,7 +163,7 @@ Services                →  Axios HTTP client, auth state management
 
 ---
 
-## 🗃️ Entity-Relationship Model
+## Entity-Relationship Model
 
 ```mermaid
 erDiagram
@@ -244,7 +243,7 @@ erDiagram
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 All endpoints are prefixed with `/api` and documented via **Swagger UI** at `/swagger-ui.html`.
 
@@ -310,41 +309,42 @@ All endpoints are prefixed with `/api` and documented via **Swagger UI** at `/sw
 
 ---
 
-## 👥 Role-Based Access
+## Role-Based Access
 
 The system implements **three tiers of access control**, each with a dedicated dashboard and navigation:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    PRODUCT MANAGER (PM)                       │
-│  • Dashboard: Global task stats + vendor performance charts  │
-│  • Manage: Projects, Sprints, Assignments, Vendors, PMs     │
-│  • View: Read-only Kanban board across all projects          │
-│  • Cannot: Approve/reject task reviews                       │
-├─────────────────────────────────────────────────────────────┤
-│                      VENDOR ADMIN                            │
-│  • Dashboard: Team task stats + employee performance         │
-│  • Manage: Sprint members, task assignments, personnel       │
-│  • Review: Approve/reject tasks (IN_REVIEW → COMPLETED)     │
-│  • Scope: Limited to own vendor's projects and team          │
-├─────────────────────────────────────────────────────────────┤
-│                   PERSONNEL (Developer)                      │
-│  • Dashboard: Personal task breakdown + sprint countdown     │
-│  • Tasks: Drag-and-drop Kanban for own assignments           │
-│  • Scope: Can only see and interact with own tasks           │
-└─────────────────────────────────────────────────────────────┘
++-------------------------------------------------------------+
+|                    PRODUCT MANAGER (PM)                       |
+|  - Dashboard: Global task stats + vendor performance charts   |
+|  - Manage: Projects, Sprints, Assignments, Vendors, PMs      |
+|  - View: Read-only Kanban board across all projects           |
+|  - Cannot: Approve/reject task reviews                        |
++-------------------------------------------------------------+
+|                      VENDOR ADMIN                             |
+|  - Dashboard: Team task stats + employee performance          |
+|  - Manage: Sprint members, task assignments, personnel        |
+|  - Review: Approve/reject tasks (IN_REVIEW -> COMPLETED)      |
+|  - Scope: Limited to own vendor's projects and team           |
++-------------------------------------------------------------+
+|                   PERSONNEL (Developer)                       |
+|  - Dashboard: Personal task breakdown + sprint countdown      |
+|  - Tasks: Drag-and-drop Kanban for own assignments            |
+|  - Scope: Can only see and interact with own tasks            |
++-------------------------------------------------------------+
 ```
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 VMS-Final/
 ├── docker-compose.yml                    # Multi-container orchestration
+├── .env.example                          # Environment variable template
 │
-├── VMS/                                  # ── Spring Boot Backend ──
-│   ├── Dockerfile                        # Multi-stage build (JDK → JRE)
+├── VMS/                                  # -- Spring Boot Backend --
+│   ├── Dockerfile                        # Multi-stage build (JDK -> JRE)
 │   ├── pom.xml                           # Maven dependencies
 │   └── src/main/java/com/example/demo/
 │       ├── VmsApplication.java           # Application entry point
@@ -370,7 +370,7 @@ VMS-Final/
 │       └── enums/                        # 5 domain enums
 │
 └── VMS-Frontend.PleaseWork/Ye/VMS-Frontend.Vue/VMS-Frontend/
-    ├── Dockerfile                        # Multi-stage build (Node → Nginx)
+    ├── Dockerfile                        # Multi-stage build (Node -> Nginx)
     ├── nginx.conf                        # SPA fallback + API reverse proxy
     ├── package.json                      # Vue 3 + Vite + Chart.js
     └── src/
@@ -407,7 +407,7 @@ VMS-Final/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -422,16 +422,17 @@ Spin up the entire stack with a single command:
 ```bash
 git clone https://github.com/aykutern/VMS-Final.git
 cd VMS-Final
+cp .env.example .env    # then edit .env with your credentials
 docker-compose up --build
 ```
 
 Once running:
 | Service | URL |
 |---------|-----|
-| 🖥️ Frontend | [http://localhost:5173](http://localhost:5173) |
-| ⚙️ Backend API | [http://localhost:8081](http://localhost:8081) |
-| 📖 Swagger UI | [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html) |
-| 🗄️ PostgreSQL | `localhost:5432` (DB: `graduationDB`) |
+| Frontend | [http://localhost:5173](http://localhost:5173) |
+| Backend API | [http://localhost:8081](http://localhost:8081) |
+| Swagger UI | [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html) |
+| PostgreSQL | `localhost:5432` |
 
 ### Option 2: Local Development
 
@@ -456,23 +457,24 @@ The application ships with a `DataLoader` that seeds sample data on first run. C
 
 ---
 
-## ⚙️ Environment Variables
+## Environment Variables
 
-The backend is configured via environment variables (with sensible defaults for local development):
+The backend is configured via environment variables. Copy `.env.example` to `.env` and fill in your values:
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DB_HOST` | `localhost` | PostgreSQL host |
-| `DB_PORT` | `5432` | PostgreSQL port |
-| `DB_NAME` | `graduationDB` | Database name |
-| `DB_USERNAME` | `postgres` | Database user |
-| `DB_PASSWORD` | `Aykut123` | Database password |
-
-These are injected via `docker-compose.yml` in containerized environments.
+| Variable | Description |
+|----------|-------------|
+| `POSTGRES_DB` | PostgreSQL database name |
+| `POSTGRES_USER` | PostgreSQL user |
+| `POSTGRES_PASSWORD` | PostgreSQL password |
+| `DB_HOST` | Database host (use `db` for Docker, `localhost` for local) |
+| `DB_PORT` | Database port (default: `5432`) |
+| `DB_NAME` | Database name used by Spring Boot |
+| `DB_USERNAME` | Database user used by Spring Boot |
+| `DB_PASSWORD` | Database password used by Spring Boot |
 
 ---
 
-## 🧠 Engineering Decisions
+## Engineering Decisions
 
 ### Why Soft Deletes?
 All entities use a `BaseEntity` with an `isActive` flag instead of physical `DELETE` statements. This preserves referential integrity, enables audit trails, and allows data recovery — a pattern commonly used in enterprise systems.
@@ -494,7 +496,7 @@ Tasks follow a review pipeline: developers move tasks to `IN_REVIEW`, and only *
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 - [ ] JWT token-based authentication
 - [ ] WebSocket notifications for real-time task updates
@@ -507,15 +509,6 @@ Tasks follow a review pipeline: developers move tasks to `IN_REVIEW`, and only *
 
 ---
 
-## 📄 License
+## License
 
 This project was built as a **graduation capstone project**. Feel free to explore, fork, and build upon it.
-
----
-
-<div align="center">
-
-**Built with ☕ and 💚 by [Aykut Eren](https://github.com/aykutern)**
-
-</div>
-]]>
